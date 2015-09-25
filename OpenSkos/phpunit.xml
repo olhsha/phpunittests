@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit>
+    <php>
+       <const name="TEST_IP" value = "192.168.99.100"/>
+        <const name="TEST_FILE_PATH" value =""/> 
+        <const name="TEST_TENANT" value="meertens"/>
+        <const name="TEST_USERNAME" value="menzo.windhouwer@meertens.knaw.nl"/>
+        <const name="TEST_USER_NUMBER" value="11"/>
+        <const name="TEST_PASSWORD" value="password"/>
+        <const name="PHP_JOBS_PROCESS" value ="php /app/tools/jobs.php process"/>
+        
+       <!--  Test Concept -->
+       <const name="CONCEPT_id" value="CCR_C-4046_944cc750-1c29-ccf0-fb68-4d00385d7b42"/>
+       <const name="CONCEPT_handle" value="http://hdl.handle.net/11148/CCR_C-4046_944cc750-1c29-ccf0-fb68-4d00385d7b42"/>
+       <const name="CONCEPT_Description_about" value="http://hdl.handle.net/11148/CCR_C-4046_944cc750-1c29-ccf0-fb68-4d00385d7b42"/>
+       <const name="CONCEPT_type_resource" value="http://www.w3.org/2004/02/skos/core#Concept"/>
+       <const name="CONCEPT_notation" value="textCorpus"/>
+       <const name="CONCEPT_NUMBER_inScheme" value="8"/>
+       <const name="CONCEPT_NUMBER_topConceptOf" value="8"/>
+       <const name="CONCEPT_prefLabel" value="text corpus"/>
+       <const name="CONCEPT_prefLabel_lang" value="en"/>
+       <const name="CONCEPT_ENDSWITH_scopeNote" value="(source: ISO 1087-2, 2.7)"/>
+       <const name="CONCEPT_ENDSWITH_definition" value="(source: ISO 1087-2, 2.7)"/>
+       <const name="CONCEPT_STARTSWITH_modified" value="2015-01-20"/> 
+       
+       <!-- test collection(s) -->
+       <const name="NUMBER_COLLECTIONS" value ="1"/>
+       <const name="COLLECTION_1_id" value ="1"/>
+       <const name="COLLECTION_1_code" value ="isocat"/>
+       <const name="COLLECTION_1_tenant" value ="meertens"/>
+       <const name="COLLECTION_1_title" value ="CLARIN collection"/>
+       <const name="COLLECTION_1_description" value =""/>
+       <const name="COLLECTION_1_website" value =""/>
+       <const name="COLLECTION_1_licensename" value =""/>
+       <const name="COLLECTION_1_licenseurl" value =""/>
+       <const name="COLLECTION_1_oaibaseurl" value =""/>
+       <const name="COLLECTION_1_allowoai" value ="N"/>
+       <const name="COLLECTION_1_conceptsbaseurl" value =""/>
+       <const name="COLLECTION_1_conceptsbaseurl" value =""/>
+       <const name="COLLECTION_1_description_about" value ="http://192.168.99.100/api/collection/meertens:isocat"/>
+       <const name="COLLECTION_1_type_resource" value ="http://www.w3.org/2002/07/owl#Ontology"/>
+       <const name="COLLECTION_1_creator" value ="CLARIN"/>
+      <const name="COLLECTION_1_creator_about" value ="http://192.168.99.100/api/institution/meertens"/>
+      <const name="COLLECTION_1_name" value ="meertens:isocat"/>
+    </php>
+</phpunit>
+
