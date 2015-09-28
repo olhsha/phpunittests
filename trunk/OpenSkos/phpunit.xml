@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit>
     <php>
-       <const name="TEST_IP" value = "192.168.99.100"/>
-        <const name="TEST_FILE_PATH" value =""/> 
-        <const name="TEST_TENANT" value="meertens"/>
-        <const name="TEST_USERNAME" value="menzo.windhouwer@meertens.knaw.nl"/>
-        <const name="TEST_USER_NUMBER" value="11"/>
-        <const name="TEST_PASSWORD" value="password"/>
+        <const name="BASE_URI" value = "http://192.168.99.100/public"/>
+        <const name="HOST" value = "192.168.99.100"/>
+        <const name="FILE_PATH" value =""/> 
+        <const name="TENANT" value="meertens"/>
+        <const name="USERNAME" value="menzo.windhouwer@meertens.knaw.nl"/>
+        <const name="USER_NUMBER" value="11"/>
+        <const name="PASSWORD" value="password"/>
+        <const name="API_KEY" value="ky4dbtgsPhH89Vg0"/>
         <const name="PHP_JOBS_PROCESS" value ="php /app/tools/jobs.php process"/>
+        <const name="UUID_PREFIX" value="CCRtest_C_"/>
+        <const name="RDF_ABOUT_PREFIX" value="http://hdl.handle.net/11148/"/>
+        <const name="HANDLE_CCR_PREFIX" value="http://hdl.handle.net/11148/CCR_P"/>
+        <const name="EXPORT_PARAMETER_CURRENT_URL_PREFIX" value="http%3A%2F%2F1192.168.99.100%2Fpublic%2Feditor%23search%2F%2Fuser%2F"/>
         
        <!--  Test Concept -->
        <const name="CONCEPT_id" value="CCR_C-4046_944cc750-1c29-ccf0-fb68-4d00385d7b42"/>

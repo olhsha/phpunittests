@@ -11,7 +11,7 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
         $client = Authenticator::authenticate();
         //prepare and send request 
         
-        $client -> setUri('http://192.168.99.100/public/api/concept?id=' . CONCEPT_handle);
+        $client -> setUri(BASE_URI . '/api/concept?id=' . CONCEPT_handle);
         $client->setConfig(array(
             'maxredirects' => 0,
             'timeout' => 30));
@@ -20,7 +20,6 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
                 'Content-Type' => 'text/xml',
             'Accept-Language'=>'nl,en-US,en',
             'Accept-Encoding'=>'gzip, deflate',
-            'Host' => '192.168.99.100',
             'Connection'=>'keep-alive')
         );
        $response = $client -> request(Zend_Http_Client::GET); 
@@ -39,7 +38,7 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
         $client = Authenticator::authenticate();
         //prepare and send request 
         
-        $client -> setUri('http://192.168.99.100/public/api/concept/' . CONCEPT_id . '.rdf');
+        $client -> setUri(BASE_URI . '/api/concept/' . CONCEPT_id . '.rdf');
         $client->setConfig(array(
             'maxredirects' => 0,
             'timeout' => 30));
@@ -48,7 +47,6 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
                 'Content-Type' => 'text/xml',
             'Accept-Language'=>'nl,en-US,en',
             'Accept-Encoding'=>'gzip, deflate',
-            'Host' => '192.168.99.100',
             'Connection'=>'keep-alive')
         );
        $response = $client -> request(Zend_Http_Client::GET); 
@@ -67,7 +65,7 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
         $client = Authenticator::authenticate();
         //prepare and send request 
         
-        $client -> setUri('http://192.168.99.100/public/api/concept/' . CONCEPT_id . '.html');
+        $client -> setUri(BASE_URI . '/api/concept/' . CONCEPT_id . '.html');
         $client->setConfig(array(
             'maxredirects' => 0,
             'timeout' => 30));
@@ -76,7 +74,6 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
                 'Content-Type' => 'text/html',
             'Accept-Language'=>'nl,en-US,en',
             'Accept-Encoding'=>'gzip, deflate',
-            'Host' => '192.168.99.100',
             'Connection'=>'keep-alive')
         );
        $response = $client -> request(Zend_Http_Client::GET); 
@@ -95,7 +92,7 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
         $client = Authenticator::authenticate();
         //prepare and send request 
         
-        $client -> setUri('http://192.168.99.100/public/api/find-concepts?format=json&fl=uuid,uri,prefLabel,class,dc_title&id=' . CONCEPT_handle);
+        $client -> setUri(BASE_URI . '/api/find-concepts?format=json&fl=uuid,uri,prefLabel,class,dc_title&id=' . CONCEPT_handle);
         $client->setConfig(array(
             'maxredirects' => 0,
             'timeout' => 30));
@@ -104,7 +101,6 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
                 'Content-Type' => 'application/json',
             'Accept-Language'=>'nl,en-US,en',
             'Accept-Encoding'=>'gzip, deflate',
-            'Host' => '192.168.99.100',
             'Connection'=>'keep-alive')
         );
        $response = $client -> request(Zend_Http_Client::GET); 
