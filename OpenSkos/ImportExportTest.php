@@ -1,21 +1,18 @@
 <?php
 
-
-require_once 'Zend/Http/Client.php';
-require_once 'Zend/Http/Cookie.php';
-require_once 'Zend/Dom/Query.php';
-require_once 'Zend/Session.php';
-        
+require_once dirname(__DIR__) . '/Utils/Authenticator.php';
+ require_once dirname(__DIR__) . '/Utils/Logging.php';  
+ 
 class ImportExportTest extends PHPUnit_Framework_TestCase {
     
     protected $notationg = "";
-    protected $clientg;
     
     public function testImport() {
         print "\n" . "Testing import ... ";
+        $client = Authenticator::authenticate();
         
         //create import job
-        $response = $this -> importFromRawData();
+        $response = $this -> importFromRawData($client);
         
        // send import job 
        if ($response->getStatus() == 200) {
@@ -28,7 +25,7 @@ class ImportExportTest extends PHPUnit_Framework_TestCase {
         }
        
         // retrieve imported concept 
-        $dom = $this ->retrieveConceptDomFromNotation($this -> notationg, 'application/xml+rdf');
+        $dom = $this ->retrieveConceptDomFromNotation($client, $this -> notationg, 'application/xml+rdf');
        
         // Asserting
         // Assert - 1 
@@ -49,15 +46,17 @@ class ImportExportTest extends PHPUnit_Framework_TestCase {
     
     public function testExport(){
         
+        $clientI = Authenticator::authenticate();
+        
          //importing
-        $responseImport = $this -> importFromRawData();
+        $responseImport = $this -> importFromRawData($clientI);
         print "\n Preparing test, step 1: make import job response: " . $responseImport -> getStatus();
         $sendjob = exec(PHP_JOBS_PROCESS);
         print "\n Preparing test, step 2: sent import job. \n" ;
         
         print "\n" . "Testing export ... ";
-        // retrieving test concept
-        $conceptIdJson = $this -> retrieveConceptIdFromNotation($this -> notationg, 'application/json');
+        $client = Authenticator::authenticate();
+        $conceptIdJson = $this -> retrieveConceptIdFromNotation($client, $this -> notationg, 'application/json');
         $conceptId = json_decode($conceptIdJson);
         $docs = $conceptId -> response -> docs;
         $uuid = $docs[0]->uuid;
@@ -69,7 +68,7 @@ class ImportExportTest extends PHPUnit_Framework_TestCase {
         print "\n If the data are big, they should be written to " . $fileName; 
         print "\n Otherwise they are exported as stream in the response's body. \n";
         
-        $response = $this -> exportConcept($uuid, $fileName);
+        $response = $this -> exportConcept($client, $uuid, $fileName);
         
         print "\n Export response status: " . $response -> GetStatus();
         print "\n Export response message: " . $response -> GetMessage();
@@ -98,30 +97,30 @@ class ImportExportTest extends PHPUnit_Framework_TestCase {
     }
     
   
-    private function retrieveConceptDomFromNotation($notation, $accept){
+    private function retrieveConceptDomFromNotation($client, $notation, $accept){
         $uri = 'http://' . TEST_IP . '/public/api/find-concepts?q=notation:' . $notation;
-        $body = $this ->retrieveConceptAsResponseBody($uri, $accept);
+        $body = $this ->retrieveConceptAsResponseBody($client, $uri, $accept);
         $dom = new Zend_Dom_Query();
         $dom->setDocumentXML($body);
         return $dom;
     }
     
-    private function retrieveConceptIdFromNotation($notation, $accept){
+    private function retrieveConceptIdFromNotation($client, $notation, $accept){
         $uri = 'http://' . TEST_IP . '/public/api/find-concepts?q=notation:' . $notation . "&fl=uuid&format=json";
-        $body = $this ->retrieveConceptAsResponseBody($uri, $accept);
+        $body = $this ->retrieveConceptAsResponseBody($client, $uri, $accept);
         return $body;
     }
     
     
-    private function retrieveConceptAsResponseBody($uri, $accept){
+    private function retrieveConceptAsResponseBody($client, $uri, $accept){
         print "\n Retrieving " . $uri;
-        $this -> clientg->setUri($uri);
-        $this -> clientg->setConfig(array(
+        $client->setUri($uri);
+        $client->setConfig(array(
             'maxredirects' => 4,
             'timeout' => 300));
 
-        $this -> clientg->SetHeaders('Accept', $accept);
-        $response = $this -> clientg->request();
+        $client->SetHeaders('Accept', $accept);
+        $response = $client->request();
        
         if ($response->getStatus() != 200) {
             print "\n " . $response->getMessage();
@@ -130,15 +129,15 @@ class ImportExportTest extends PHPUnit_Framework_TestCase {
         return $response->getBody();
     }
     
-    private function exportConcept($conceptId, $fullFileName){
+    private function exportConcept($client, $conceptId, $fullFileName){
 
        $url = 'http://' . TEST_IP . '/public/editor/concept/export';
        $currentURLpostParameter ="http%3A%2F%2F1" . TEST_IP . "%2Fpublic%2Feditor%23search%2F%2Fuser%2F" . TEST_USER_NUMBER . "%2Fconcept%2F" . $conceptId . "%2F";
-       $this -> clientg->setUri($url);
-       $this -> clientg->setConfig(array(
+       $client->setUri($url);
+       $client->setConfig(array(
             'maxredirects' => 10,
             'timeout' => 300));
-       $this -> clientg->setHeaders(array(
+       $client->setHeaders(array(
             'Accept' => 'text/html,application/xhtml+xml,application/xml',
                 'Content-Type' => 'application/x-www-form-urlencoded',
             'Accept-Language'=>'en-US,en',
@@ -146,49 +145,20 @@ class ImportExportTest extends PHPUnit_Framework_TestCase {
             'Host' => '192.168.99.100')
         );
         
-        $this -> clientg -> SetParameterPost('fileName', $fullFileName);
-        $this -> clientg -> SetParameterPost('format', 'xml');
-        $this -> clientg -> SetParameterPost('maxDepth', 1);
-        $this -> clientg -> SetParameterPost('exportableFields', "");
-        $this -> clientg -> SetParameterPost('filedsToExport', "");
-        $this -> clientg -> SetParameterPost('type', 'concept');
-        $this -> clientg -> SetParameterPost('additionalData', $conceptId);
-        $this -> clientg -> SetParameterPost('currentUrl', $currentURLpostParameter);
-        $this -> clientg -> SetParameterPost('exportButton', 'Export');
-        $response = $this -> clientg->request('POST');
+        $client -> SetParameterPost('fileName', $fullFileName);
+        $client -> SetParameterPost('format', 'xml');
+        $client -> SetParameterPost('maxDepth', 1);
+        $client -> SetParameterPost('exportableFields', "");
+        $client -> SetParameterPost('filedsToExport', "");
+        $client -> SetParameterPost('type', 'concept');
+        $client -> SetParameterPost('additionalData', $conceptId);
+        $client -> SetParameterPost('currentUrl', $currentURLpostParameter);
+        $client -> SetParameterPost('exportButton', 'Export');
+        $response = $client->request('POST');
         return $response;
     }
     
-   
-    
-    private function authenticate() {
-        $this -> clientg = new Zend_Http_Client();
-        $this -> clientg->setCookieJar();
-        $this -> clientg -> setUri('http://192.168.99.100/public/editor/login/authenticate');
-        $this -> clientg->setConfig(array(
-            'maxredirects' => 10,
-            'timeout' => 300));
-        $this -> clientg->SetHeaders(array(
-            'Accept' => 'text/html,application/xhtml+xml,application/xml',
-                'Content-Type' => 'application/x-www-form-urlencoded',
-            'Accept-Language'=>'en-US,en',
-            'Accept-Encoding'=>'gzip, deflate',
-            'Host' => '192.168.99.100',
-            'Referer' => 'http://192.168.99.100/public/editor/login',
-            'Connection'=>'keep-alive')
-        );
-        
-        $this -> clientg -> setParameterPost('username', TEST_USERNAME);
-        $this -> clientg -> setParameterPost('tenant', TEST_TENANT);
-        $this -> clientg -> setParameterPost('password', TEST_PASSWORD);
-        $this -> clientg -> setParameterPost('rememberme', '0');
-        $this -> clientg -> setParameterPost('login', 'Login');
-        $responseAuth = $this -> clientg -> request(Zend_Http_Client::POST);
-        print "\n Authentication response status: " . $responseAuth -> getStatus();
-        print "\n Authentication response message: " . $responseAuth -> getMessage();
-    }
-    private function importFromRawData() {
-        $this -> authenticate();
+    private function importFromRawData($client) {
         $randomn = rand(0, 2048);
         $tag= 'Import' . $randomn;
         $notation = 'textCorpus' . $randomn;
@@ -228,11 +198,11 @@ class ImportExportTest extends PHPUnit_Framework_TestCase {
         
       
         // importeren
-        $this -> clientg ->setUri($url);
-        $this -> clientg->setConfig(array(
+        $client ->setUri($url);
+        $client->setConfig(array(
             'maxredirects' => 10,
             'timeout' => 300));
-        $this -> clientg->SetHeaders(array(
+        $client->SetHeaders(array(
             //'Accept' => 'text/html,application/xhtml+xml,application/xml',
             'Accept' => 'application/xml+rdf',
                 'Content-Type' => 'multipart/form-data; boundary=' . $boundary,
@@ -288,12 +258,12 @@ Submit';
                 $part7 . $lnBoundaryLn . $part8 . $lnBoundaryLn  . $part9. "\n" . $boundary . "--";  
         
         
-        $this -> clientg -> setRawData($postData);
-        $response = $this -> clientg -> request(Zend_Http_Client::POST);
+        $client -> setRawData($postData);
+        $response = $client -> request(Zend_Http_Client::POST);
         $status = $response -> GetStatus();
         print "\n Response status: " . $status;
         print "\n Response message: " . $response -> GetMessage();
-        $this -> var_error_log("\n Response body ", $response->getBody(), "/apitest/OpenSkos/ImportResponse.html");
+        Logging :: var_error_log("\n Response body ", $response->getBody(), "/apitest/OpenSkos/ImportResponse.html");
         if ($status == 200) {
             $this -> notationg = $notation;
             print "\n Imported concept's tag is " .  $tag;
@@ -302,12 +272,6 @@ Submit';
         return $response;
     }
     
-     protected function var_error_log($message, $object, $fileName){
-        ob_start(); // start buffer capture
-        var_dump($object);
-        $contents = ob_get_contents();
-        ob_end_clean();
-        error_log($message . $contents, 3, $fileName);
-    }
+   
 }
 ?>

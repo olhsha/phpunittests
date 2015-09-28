@@ -1,25 +1,21 @@
 <?php
 
-require_once 'Zend/Http/Client.php';
-require_once 'Zend/Http/Cookie.php';
-require_once 'Zend/Dom/Query.php';
-require_once 'Zend/Session.php';
+require_once dirname(__DIR__) . '/Utils/Authenticator.php';
         
 class GetConceptTest extends PHPUnit_Framework_TestCase {
     
-    protected $notationg = "";
-    protected $clientg;
     
     public function testViaHandle() {
         print "\n" . "Test: get concept via its handle. ";
-        $this ->authenticate();
+        
+        $client = Authenticator::authenticate();
         //prepare and send request 
         
-        $this -> clientg -> setUri('http://192.168.99.100/public/api/concept?id=' . CONCEPT_handle);
-        $this -> clientg->setConfig(array(
+        $client -> setUri('http://192.168.99.100/public/api/concept?id=' . CONCEPT_handle);
+        $client->setConfig(array(
             'maxredirects' => 0,
             'timeout' => 30));
-        $this -> clientg->SetHeaders(array(
+        $client->SetHeaders(array(
             'Accept' => 'text/html,application/xhtml+xml,application/xml',
                 'Content-Type' => 'text/xml',
             'Accept-Language'=>'nl,en-US,en',
@@ -27,7 +23,7 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
             'Host' => '192.168.99.100',
             'Connection'=>'keep-alive')
         );
-       $response = $this -> clientg -> request(Zend_Http_Client::GET); 
+       $response = $client -> request(Zend_Http_Client::GET); 
         
        // analyse respond
        if ($response->getStatus() != 200) {
@@ -40,14 +36,14 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
     
     public function testViaId() {
         print "\n" . "Test: get concept-rdf via its id. ";
-        $this ->authenticate();
+        $client = Authenticator::authenticate();
         //prepare and send request 
         
-        $this -> clientg -> setUri('http://192.168.99.100/public/api/concept/' . CONCEPT_id . '.rdf');
-        $this -> clientg->setConfig(array(
+        $client -> setUri('http://192.168.99.100/public/api/concept/' . CONCEPT_id . '.rdf');
+        $client->setConfig(array(
             'maxredirects' => 0,
             'timeout' => 30));
-        $this -> clientg->SetHeaders(array(
+        $client->SetHeaders(array(
             'Accept' => 'text/html,application/xhtml+xml,application/xml',
                 'Content-Type' => 'text/xml',
             'Accept-Language'=>'nl,en-US,en',
@@ -55,7 +51,7 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
             'Host' => '192.168.99.100',
             'Connection'=>'keep-alive')
         );
-       $response = $this -> clientg -> request(Zend_Http_Client::GET); 
+       $response = $client -> request(Zend_Http_Client::GET); 
         
        // analyse respond
        if ($response->getStatus() != 200) {
@@ -68,14 +64,14 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
     
     public function testViaIdHTML() {
         print "\n" . "Test: get concept-html via its id. ";
-        $this ->authenticate();
+        $client = Authenticator::authenticate();
         //prepare and send request 
         
-        $this -> clientg -> setUri('http://192.168.99.100/public/api/concept/' . CONCEPT_id . '.html');
-        $this -> clientg->setConfig(array(
+        $client -> setUri('http://192.168.99.100/public/api/concept/' . CONCEPT_id . '.html');
+        $client->setConfig(array(
             'maxredirects' => 0,
             'timeout' => 30));
-        $this -> clientg->SetHeaders(array(
+        $client->SetHeaders(array(
             'Accept' => 'text/html,application/xhtml+xml,application/xml',
                 'Content-Type' => 'text/html',
             'Accept-Language'=>'nl,en-US,en',
@@ -83,7 +79,7 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
             'Host' => '192.168.99.100',
             'Connection'=>'keep-alive')
         );
-       $response = $this -> clientg -> request(Zend_Http_Client::GET); 
+       $response = $client -> request(Zend_Http_Client::GET); 
         
        // analyse respond
        if ($response->getStatus() != 200) {
@@ -96,14 +92,14 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
     
     public function testViaHandleJson() {
         print "\n" . "Test: get concept via its handle, return json. ";
-        $this ->authenticate();
+        $client = Authenticator::authenticate();
         //prepare and send request 
         
-        $this -> clientg -> setUri('http://192.168.99.100/public/api/find-concepts?format=json&fl=uuid,uri,prefLabel,class,dc_title&id=' . CONCEPT_handle);
-        $this -> clientg->setConfig(array(
+        $client -> setUri('http://192.168.99.100/public/api/find-concepts?format=json&fl=uuid,uri,prefLabel,class,dc_title&id=' . CONCEPT_handle);
+        $client->setConfig(array(
             'maxredirects' => 0,
             'timeout' => 30));
-        $this -> clientg->SetHeaders(array(
+        $client->SetHeaders(array(
             'Accept' => 'text/html,application/xhtml+xml,application/xml',
                 'Content-Type' => 'application/json',
             'Accept-Language'=>'nl,en-US,en',
@@ -111,7 +107,7 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
             'Host' => '192.168.99.100',
             'Connection'=>'keep-alive')
         );
-       $response = $this -> clientg -> request(Zend_Http_Client::GET); 
+       $response = $client -> request(Zend_Http_Client::GET); 
         
        // analyse respond
        if ($response->getStatus() != 200) {
@@ -215,41 +211,6 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
         $this -> assertEquals(CONCEPT_prefLabel, $arrays["prefLabel"][0]);
     }
   
-    private function authenticate() {
-        $this -> clientg = new Zend_Http_Client();
-        $this -> clientg->setCookieJar();
-        $this -> clientg -> setUri('http://192.168.99.100/public/editor/login/authenticate');
-        $this -> clientg->setConfig(array(
-            'maxredirects' => 10,
-            'timeout' => 300));
-        $this -> clientg->SetHeaders(array(
-            'Accept' => 'text/html,application/xhtml+xml,application/xml',
-                'Content-Type' => 'application/x-www-form-urlencoded',
-            'Accept-Language'=>'en-US,en',
-            'Accept-Encoding'=>'gzip, deflate',
-            'Host' => '192.168.99.100',
-            'Referer' => 'http://192.168.99.100/public/editor/login',
-            'Connection'=>'keep-alive')
-        );
-        
-        $this -> clientg -> setParameterPost('username', TEST_USERNAME);
-        $this -> clientg -> setParameterPost('tenant', TEST_TENANT);
-        $this -> clientg -> setParameterPost('password', TEST_PASSWORD);
-        $this -> clientg -> setParameterPost('rememberme', '0');
-        $this -> clientg -> setParameterPost('login', 'Login');
-        $responseAuth = $this -> clientg -> request(Zend_Http_Client::POST);
-        print "\n Authentication response status: " . $responseAuth -> getStatus();
-        print "\n Authentication response message: " . $responseAuth -> getMessage();
-    }
-   
-    
-     protected function var_error_log($message, $object, $fileName){
-        ob_start(); // start buffer capture
-        var_dump($object);
-        $contents = ob_get_contents();
-        ob_end_clean();
-        error_log($message . $contents, 3, $fileName);
-    }
 }
 ?>
 
