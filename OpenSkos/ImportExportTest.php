@@ -1,7 +1,7 @@
 <?php
 
 require_once dirname(__DIR__) . '/Utils/Authenticator.php';
- require_once dirname(__DIR__) . '/Utils/Logging.php';  
+require_once dirname(__DIR__) . '/Utils/Logging.php';  
  
 class ImportExportTest extends PHPUnit_Framework_TestCase {
     
@@ -37,10 +37,9 @@ class ImportExportTest extends PHPUnit_Framework_TestCase {
         $results2 = $dom->query('skos:inScheme');
         $this -> AssertEquals(8, count($results2));
         $i=0;
-        $prefix = 'http://hdl.handle.net/11148/CCR_P';
         foreach ($results2 as $result) {
             $i++;
-            $this->assertStringStartsWith($prefix, $result -> getAttribute('rdf:resource'), "The $i-th attribute does not start with $prefix");
+            $this->assertStringStartsWith(HANDLE_CCR_PREFIX, $result -> getAttribute('rdf:resource'), "The $i-th attribute does not start with " . HANDLE_CCR_PREFIX);
         }
     }
     
@@ -88,17 +87,16 @@ class ImportExportTest extends PHPUnit_Framework_TestCase {
         $results2 = $dom->query('skos:inScheme');
         $this -> AssertEquals(8, count($results2));
         $i=0;
-        $prefix = 'http://hdl.handle.net/11148/CCR_P';
         foreach ($results2 as $result) {
             $i++;
-            $this->assertStringStartsWith($prefix, $result -> getAttribute('rdf:resource'), "The $i-th attribute does not start with $prefix");
+            $this->assertStringStartsWith(HANDLE_CCR_PREFIX, $result -> getAttribute('rdf:resource'), "The $i-th attribute does not start with " . HANDLE_CCR_PREFIX);
         }
         
     }
     
   
     private function retrieveConceptDomFromNotation($client, $notation, $accept){
-        $uri = 'http://' . TEST_IP . '/public/api/find-concepts?q=notation:' . $notation;
+        $uri = BASE_URI . '/api/find-concepts?q=notation:' . $notation;
         $body = $this ->retrieveConceptAsResponseBody($client, $uri, $accept);
         $dom = new Zend_Dom_Query();
         $dom->setDocumentXML($body);
@@ -106,7 +104,7 @@ class ImportExportTest extends PHPUnit_Framework_TestCase {
     }
     
     private function retrieveConceptIdFromNotation($client, $notation, $accept){
-        $uri = 'http://' . TEST_IP . '/public/api/find-concepts?q=notation:' . $notation . "&fl=uuid&format=json";
+        $uri = BASE_URI . '/api/find-concepts?q=notation:' . $notation . "&fl=uuid&format=json";
         $body = $this ->retrieveConceptAsResponseBody($client, $uri, $accept);
         return $body;
     }
@@ -116,8 +114,8 @@ class ImportExportTest extends PHPUnit_Framework_TestCase {
         print "\n Retrieving " . $uri;
         $client->setUri($uri);
         $client->setConfig(array(
-            'maxredirects' => 4,
-            'timeout' => 300));
+            'maxredirects' => 0,
+            'timeout' => 30));
 
         $client->SetHeaders('Accept', $accept);
         $response = $client->request();
@@ -131,18 +129,17 @@ class ImportExportTest extends PHPUnit_Framework_TestCase {
     
     private function exportConcept($client, $conceptId, $fullFileName){
 
-       $url = 'http://' . TEST_IP . '/public/editor/concept/export';
-       $currentURLpostParameter ="http%3A%2F%2F1" . TEST_IP . "%2Fpublic%2Feditor%23search%2F%2Fuser%2F" . TEST_USER_NUMBER . "%2Fconcept%2F" . $conceptId . "%2F";
+       $url = BASE_URI . '/editor/concept/export';
+       $currentURLpostParameter = EXPORT_PARAMETER_CURRENT_URL_PREFIX . USER_NUMBER . "%2Fconcept%2F" . $conceptId . "%2F";
        $client->setUri($url);
        $client->setConfig(array(
-            'maxredirects' => 10,
-            'timeout' => 300));
+            'maxredirects' => 1,
+            'timeout' => 30));
        $client->setHeaders(array(
             'Accept' => 'text/html,application/xhtml+xml,application/xml',
                 'Content-Type' => 'application/x-www-form-urlencoded',
             'Accept-Language'=>'en-US,en',
-            'Accept-Encoding'=>'gzip, deflate',
-            'Host' => '192.168.99.100')
+            'Accept-Encoding'=>'gzip, deflate')
         );
         
         $client -> SetParameterPost('fileName', $fullFileName);
@@ -194,21 +191,18 @@ class ImportExportTest extends PHPUnit_Framework_TestCase {
 '</rdf:Description>' .
 '</rdf:RDF>';
         $boundary = '36374246216810994721943965972';
-        $url = 'http://192.168.99.100/public/editor/collections/import/collection/isocat';
         
-      
         // importeren
-        $client ->setUri($url);
+        $client ->setUri(BASE_URI . '/editor/collections/import/collection/isocat');
         $client->setConfig(array(
-            'maxredirects' => 10,
-            'timeout' => 300));
+            'maxredirects' => 2,
+            'timeout' => 30));
         $client->SetHeaders(array(
             //'Accept' => 'text/html,application/xhtml+xml,application/xml',
             'Accept' => 'application/xml+rdf',
                 'Content-Type' => 'multipart/form-data; boundary=' . $boundary,
             'Accept-Language'=>'en-US,en',
             'Accept-Encoding'=>'gzip, deflate',
-            'Host' => '192.168.99.100',
             'Connection'=>'keep-alive')
         );
         
@@ -263,7 +257,7 @@ Submit';
         $status = $response -> GetStatus();
         print "\n Response status: " . $status;
         print "\n Response message: " . $response -> GetMessage();
-        Logging :: var_error_log("\n Response body ", $response->getBody(), "/apitest/OpenSkos/ImportResponse.html");
+        Logging :: var_error_log("\n Response body ", $response->getBody(), dirname(__DIR__) . "/OpenSkos/ImportResponse.html");
         if ($status == 200) {
             $this -> notationg = $notation;
             print "\n Imported concept's tag is " .  $tag;

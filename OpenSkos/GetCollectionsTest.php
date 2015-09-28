@@ -10,7 +10,7 @@ class GetCollectionsTest extends PHPUnit_Framework_TestCase {
          $client = Authenticator::authenticate();
         //prepare and send request 
         
-        $client -> setUri('http://192.168.99.100/public/api/collections?format=json');
+        $client -> setUri(BASE_URI . '/api/collections?format=json');
         $client->setConfig(array(
             'maxredirects' => 0,
             'timeout' => 30));
@@ -19,7 +19,6 @@ class GetCollectionsTest extends PHPUnit_Framework_TestCase {
                 'Content-Type' => 'application/json',
             'Accept-Language'=>'nl,en-US,en',
             'Accept-Encoding'=>'gzip, deflate',
-            'Host' => '192.168.99.100',
             'Connection'=>'keep-alive')
         );
        $response = $client -> request(Zend_Http_Client::GET); 
@@ -38,7 +37,7 @@ class GetCollectionsTest extends PHPUnit_Framework_TestCase {
          $client = Authenticator::authenticate();
         //prepare and send request 
         
-        $client -> setUri('http://192.168.99.100/public/api/collections?allow_oai=y&format=json');
+        $client -> setUri(BASE_URI . '/api/collections?allow_oai=y&format=json');
         $client->setConfig(array(
             'maxredirects' => 0,
             'timeout' => 30));
@@ -47,7 +46,6 @@ class GetCollectionsTest extends PHPUnit_Framework_TestCase {
                 'Content-Type' => 'application/json',
             'Accept-Language'=>'nl,en-US,en',
             'Accept-Encoding'=>'gzip, deflate',
-            'Host' => '192.168.99.100',
             'Connection'=>'keep-alive')
         );
        $response = $client -> request(Zend_Http_Client::GET); 
@@ -71,7 +69,7 @@ class GetCollectionsTest extends PHPUnit_Framework_TestCase {
          $client = Authenticator::authenticate();
         //prepare and send request 
         
-        $client -> setUri('http://192.168.99.100/public/api/collections/' . COLLECTION_1_name . '.rdf');
+        $client -> setUri(BASE_URI . '/api/collections/' . COLLECTION_1_name . '.rdf');
         $client->setConfig(array(
             'maxredirects' => 0,
             'timeout' => 30));
@@ -80,7 +78,6 @@ class GetCollectionsTest extends PHPUnit_Framework_TestCase {
                 'Content-Type' => 'text/xml',
             'Accept-Language'=>'nl,en-US,en',
             'Accept-Encoding'=>'gzip, deflate',
-            'Host' => '192.168.99.100',
             'Connection'=>'keep-alive')
         );
        $response = $client -> request(Zend_Http_Client::GET); 
