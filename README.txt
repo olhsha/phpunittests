@@ -17,8 +17,8 @@ as expected values (originals) to compare with the obtained values. You need to 
 a concept in the database, against which you will run the tests, and fill in the values of the constants
 for this concept.
 
-2) You may run tests from <sources-directory>/vendor/phpunit/phpunit subdirectory.  
+3) You may run tests from <sources-directory>/vendor/phpunit/phpunit subdirectory.  
 The example command looks like 
 
-    ./phpunit -c /apitest/OpenSkos/phpunit.xml /apitest/OpenSkos/ImportExportTest.php 
+    ./phpunit -c /apitest/OpenSkos-1-picturae/phpunit.xml /apitest/OpenSkos-1-picturae/ImportExportTest.php 
      
