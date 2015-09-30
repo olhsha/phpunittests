@@ -5,7 +5,7 @@ class Authenticator {
     public static function authenticate() {
         $zendClient = new Zend_Http_Client();
         $zendClient->setCookieJar();
-        $zendClient -> setUri(BASE_URI . '/editor/login/authenticate');
+        $zendClient -> setUri(BASE_URI_ . '/public/editor/login/authenticate');
         $zendClient->setConfig(array(
             'maxredirects' => 2,
             'timeout' => 30));
@@ -14,7 +14,7 @@ class Authenticator {
                 'Content-Type' => 'application/x-www-form-urlencoded',
             'Accept-Language'=>'en-US,en',
             'Accept-Encoding'=>'gzip, deflate',
-            'Referer' => BASE_URI . '/editor/login',
+            'Referer' => BASE_URI_ . '/public/editor/login',
             'Connection'=>'keep-alive')
         );
         
