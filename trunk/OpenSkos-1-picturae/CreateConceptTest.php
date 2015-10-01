@@ -10,8 +10,8 @@ class CreateConceptTest extends PHPUnit_Framework_TestCase {
         $client = Authenticator::authenticate();
         $randomn = rand(0, 2048);
         $prefLabel= 'testPrefLable_' . $randomn;
-        $dateSubmitted = date(DateTime::ISO8601);
-        $dateAccepted = date(DateTime::ISO8601);
+        $dateSubmitted = '2015-10-01T15:06:58Z';//date(DateTime::ISO8601);
+        $dateAccepted = '2015-10-01T15:06:58Z';//date(DateTime::ISO8601);
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:dcterms="http://purl.org/dc/terms/" > ' .
                '<rdf:Description>' . 
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>'. 
@@ -34,6 +34,7 @@ class CreateConceptTest extends PHPUnit_Framework_TestCase {
         ->setParameterGet('tenant', TENANT)
         ->setParameterGet('collection', COLLECTION_1_code)
         ->setParameterGet('key', API_KEY)
+        ->setParameterGet('autoGenerateIdentifiers', 'true')
         ->request('POST');
      if ($response->isSuccessful()) {
         print '\n Concept created \n';

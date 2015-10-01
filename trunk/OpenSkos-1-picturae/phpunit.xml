@@ -5,7 +5,7 @@
         <const name="FILE_PATH" value =""/> 
         <const name="TENANT" value="mi"/>
         <const name="USERNAME" value="info@meertens.knaw.nl"/>
-        <const name="USER_NUMBER" value="1"/>
+        <const name="USER_NUMBER" value="5"/>
         <const name="PASSWORD" value="meertenspassword"/>
         <const name="API_KEY" value="apikey"/>
         <const name="PHP_JOBS_PROCESS" value ="php /app/tools/jobs.php process"/>
@@ -15,17 +15,15 @@
         <const name="EXPORT_PARAMETER_CURRENT_URL_PREFIX" value="http%3A%2F%2F1192.168.99.100%2Fpublic%2Feditor%23search%2F%2Fuser%2F"/>
         
        <!--  Test Concept -->
-       <const name="CONCEPT_id" value="CCRtest_C_560bab315e0ba"/>
-       <const name="CONCEPT_handle" value="CCRtest_C_560bab315e0ba"/>
-       <const name="CONCEPT_Description_about" value="CCRtest_C_560bab315e0ba"/>
+       <const name="CONCEPT_id" value="affc8825-63e1-d8ed-0d44-9fae6b043bd3"/>
+       <const name="CONCEPT_handle" value="http://data.beeldengeluid.nl/gtaa/1"/>
+       <const name="CONCEPT_Description_about" value="http://data.beeldengeluid.nl/gtaa/1"/>
        <const name="CONCEPT_type_resource" value="http://www.w3.org/2004/02/skos/core#Concept"/>
-       <const name="CONCEPT_notation" value="textCorpus1436"/>
-       <const name="CONCEPT_NUMBER_inScheme" value="8"/>
-       <const name="CONCEPT_NUMBER_topConceptOf" value="8"/>
-       <const name="CONCEPT_prefLabel" value="Import1436"/>
-       <const name="CONCEPT_prefLabel_lang" value="en"/>
-       <const name="CONCEPT_ENDSWITH_scopeNote" value="(source: ISO 1087-2, 2.7)"/>
-       <const name="CONCEPT_ENDSWITH_definition" value="(source: ISO 1087-2, 2.7)"/>
+       <const name="CONCEPT_notation" value="1"/>
+       <const name="CONCEPT_NUMBER_inScheme" value="1"/>
+       <const name="CONCEPT_NUMBER_topConceptOf" value="1"/>
+       <const name="CONCEPT_prefLabel" value="testconcept1"/>
+       <const name="CONCEPT_prefLabel_lang" value="nl"/>
        
        <!-- test collection(s) -->
        <const name="NUMBER_COLLECTIONS" value ="1"/>

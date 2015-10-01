@@ -137,12 +137,6 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
         $this -> AssertEquals(CONCEPT_prefLabel_lang, $results6 -> current()-> getAttribute('xml:lang'));
         $this -> AssertEquals(CONCEPT_prefLabel, $results6 -> current()-> nodeValue);
         
-        $results7 = $dom->query('skos:scopeNote');
-        $this ->assertStringEndsWith(CONCEPT_ENDSWITH_scopeNote, $results7 -> current()-> nodeValue);
-        
-        $results8 = $dom->query('skos:definition');
-        $this -> AssertStringEndsWith(CONCEPT_ENDSWITH_definition, $results8 -> current()-> nodeValue);
-       
     }
     
     private function getByIndex($list, $index){
@@ -187,12 +181,6 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
         
         $label = $dom -> query ('.prefLabel .label');
         $this -> AssertEquals(CONCEPT_prefLabel, $label -> current() -> nodeValue);
-        
-        $def = $dom -> query ('.definition .label');
-        $this -> assertStringEndsWith(CONCEPT_ENDSWITH_definition, $def -> current() -> nodeValue);
-        
-        $note = $dom -> query ('.scopeNote .label');
-        $this -> assertStringEndsWith(CONCEPT_ENDSWITH_scopeNote, $note -> current() -> nodeValue);
     }
     
     private function assertionsForJsonConcept($response) {
