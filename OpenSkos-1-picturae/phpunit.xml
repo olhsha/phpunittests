@@ -24,6 +24,8 @@
        <const name="CONCEPT_NUMBER_topConceptOf" value="1"/>
        <const name="CONCEPT_prefLabel" value="testconcept1"/>
        <const name="CONCEPT_prefLabel_lang" value="nl"/>
+       <const name="CONCEPT_schema_forfilter" value="http://data.beeldengeluid.nl/gtaa/test1/testschema1"/>
+       <const name="CONCEPT_status_forfilter" value="candidate%20OR%20approved"/>
        
        <!-- test collection(s) -->
        <const name="NUMBER_COLLECTIONS" value ="1"/>
@@ -40,7 +42,8 @@
        <const name="COLLECTION_1_conceptsbaseurl" value =""/>
        <const name="COLLECTION_1_type_resource" value ="http://www.w3.org/2002/07/owl#Ontology"/>
        <const name="COLLECTION_1_creator" value ="meertens"/>
-      <const name="COLLECTION_1_creator_about" value ="http://192.168.99.100/api/institution/mi"/>
+       <const name="COLLECTION_1_creator_about" value ="http://192.168.99.100/api/institution/mi"/>
+      
     </php>
 </phpunit>
 

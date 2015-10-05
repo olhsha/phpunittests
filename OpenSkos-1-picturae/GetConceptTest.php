@@ -113,6 +113,61 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
        $this -> AssertEquals(200, $response->getStatus());
        $this -> assertionsForJsonConcept($response);
     }  
+    public function test11RetrieveConceptFiletrStatus() {
+        // Use API to search for concept and filter on status
+        // todo: test additionele zoek parameters
+        print "\n" . "Test: get concept via filters";
+        $client = Authenticator::authenticate();
+        //prepare and send request 
+        
+        $uri = BASE_URI_ . '/public/api/find-concepts?q=prefLabel:'. CONCEPT_prefLabel . '&status:' . CONCEPT_status_forfilter . '&tenant:' . TENANT. '&inScheme:' . CONCEPT_schema_forfilter;
+        print "\n fileterd request's uri: " . $uri; 
+        
+        $client -> setUri($uri);
+        $client->setConfig(array(
+            'maxredirects' => 0,
+            'timeout' => 30));
+        $client->SetHeaders(array(
+            'Accept' => 'text/html,application/xhtml+xml,application/xml',
+                'Content-Type' => 'application/xml',
+            'Accept-Language'=>'nl,en-US,en',
+            'Accept-Encoding'=>'gzip, deflate',
+            'Connection'=>'keep-alive')
+        );
+       $response = $client -> request(Zend_Http_Client::GET); 
+        
+       // analyse respond
+       if ($response->getStatus() != 200) {
+          print "\n " . $response->getMessage();
+       }
+       
+       print "\n Response Headers: ";
+       var_dump($response ->getHeaders());
+      
+       $this -> AssertEquals(200, $response->getStatus());
+       
+       $namespaces = array (
+         "rdf" => "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+          "skos" => "http://www.w3.org/2004/02/skos/core#",
+          "openskos" => "http://openskos.org/xmlns/openskos.xsd"  
+     );
+     
+        print "\n\n\n Response Body: ";
+       var_dump($response ->getBody());
+       
+        
+     $dom = new Zend_Dom_Query();
+     $dom->setDocumentXML($response->getBody());
+     $dom->registerXpathNamespaces($namespaces);
+     
+     $elem = $dom->queryXpath('/rdf:RDF');
+     $this-> assertEquals($elem ->current()->nodeType, XML_ELEMENT_NODE, 'The root node of the response is not an element');
+     
+     $resDescr = $dom->queryXpath('/rdf:RDF/rdf:Description');
+     $resStatus = $dom->queryXpath('/rdf:RDF/rdf:Description/openskos:status');
+     $this-> assertEquals(1, $resDescr->count());
+     $this-> assertEquals($resDescr->count(), $resStatus ->count(), "Not all result concepts have status field. ");
+    }  
     
     private function assertionsForXMLRDFConcept($response) {
         $dom = new Zend_Dom_Query();
