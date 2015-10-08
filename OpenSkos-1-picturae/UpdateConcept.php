@@ -12,7 +12,7 @@ class UpdateConceptTest extends PHPUnit_Framework_TestCase {
         //prepare and send request 
 
         $uri = BASE_URI_ . '/public/api/find-concepts?q=prefLabel:' . CONCEPT_prefLabel . '&status:' . CONCEPT_status_forfilter . '&tenant:' . TENANT . '&inScheme:' . CONCEPT_schema_forfilter;
-        print "\n fileterd request's uri: " . $uri . "\n";
+        print "\n filtered request's uri: " . $uri . "\n";
 
         $client->setUri($uri);
         $client->setConfig(array(
@@ -50,16 +50,22 @@ class UpdateConceptTest extends PHPUnit_Framework_TestCase {
         $l = $resDescr->count();
         $resDescr->rewind();
         while ($i < $l) {
-            print "\n\n description " . $i . "\n";
-            $newDescr = $resDescr->current()->cloneNode(true);
-            
-            $dom = new DOMDocument('1.0', 'utf-8');
-            $rdf = $dom -> createElement("rdf:RDF");
-            $rdf ->appendChild($newDescr);
-            $dom->appendChild($rdf);
-            
-            $xml = $dom->saveXML();
+            $labels = $resDescr->current()->getElementsByTagName("altLabel");
+            //print "\n val:" . $labels ->item(0) ->textContent;
+            $randomn = rand(0, 4096);
+            $labels ->item(0) ->nodeValue = "test-1-" . $randomn;
+            $doc = $resDescr->current()->ownerDocument; 
+            $xml = $doc ->saveXML();
             var_dump($xml);
+            
+            // try $newdom isntead of $dom, which can be corrupted
+            //$dom = new DOMDocument('1.0', 'utf-8');
+            //$rdf = $dom -> createElement("rdf:RDF");
+            //$dom ->importNode($newDescr, TRUE);// appendChild($rdf);
+            //$rdf ->appendChild($newDescr);
+            //$xml = $dom->saveXML();
+            //var_dump($xml);
+            
             $client->setUri(BASE_URI_ . "/public/api/concept?");
             $client->setConfig(array(
                 'maxredirects' => 0,
@@ -73,7 +79,7 @@ class UpdateConceptTest extends PHPUnit_Framework_TestCase {
                     ->setParameterGet('key', API_KEY)
                     ->request(Zend_Http_Client::PUT);
 
-            print "\n response message: " . $response->getMessage();
+            print "\n Update response message: " . $response->getMessage();
             
             $this->AssertEquals(200, $response->getStatus(), 'Update request returned worng status code');
             $resDescr->next();
