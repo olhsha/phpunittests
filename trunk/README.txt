@@ -6,8 +6,8 @@ the corresponding dependencies. It is done simply by running "composer" in the <
 php composer.phar install
 
 It picks up "composer.json" file containing the list of necessary libraries. This file  must be in 
-the repository. The "composer.phar" may be or may not be in the repository,  
-and in the last case you can download it from elsewhere.
+the repository. The "composer.phar" may be but do not have to be in the repository,  
+and you can download it from elsewhere.
 
 After running the command, a directory "vendor" is created. It contains the necessary libraries.
 
