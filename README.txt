@@ -22,3 +22,7 @@ The example command looks like
 
     ./phpunit -c /apitest/OpenSkos-1-picturae/phpunit.xml /apitest/OpenSkos-1-picturae/ImportExportTest.php 
      
+OR 
+    ./phpunit -c /apitest/OpenSkos2/phpunit.xml /apitest/OpenSkos2/CreateConcept2Test.php 
+
+4) example fusekui query (should not be necessarily URL-encoded) http://192.168.99.100:3030/openskos/query?query=select%20%20?s%20?p%20?o%20%20where%20{%20?s%20?p%20?o%20.%20}

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit>
+    <php>
+        <const name="BASE_URI_" value = "http://192.168.99.100"/>
+        <const name="FILE_PATH" value =""/> 
+        <const name="TENANT" value="mi"/>
+        <const name="USERNAME" value="info@meertens.knaw.nl"/>
+        <const name="USER_NUMBER" value="5"/>
+        <const name="PASSWORD" value="meertenspassword"/>
+        <const name="API_KEY" value="apikey"/>
+        <const name="PHP_JOBS_PROCESS" value ="php /app/tools/jobs.php process"/>
+        <const name="UUID_PREFIX" value="CCRtest_C_"/>
+        <const name="RDF_ABOUT_PREFIX" value="http://hdl.handle.net/11148/"/>
+        <const name="HANDLE_CCR_PREFIX" value="http://hdl.handle.net/11148/CCR_P"/>
+        <const name="EXPORT_PARAMETER_CURRENT_URL_PREFIX" value="http%3A%2F%2F1192.168.99.100%2Fpublic%2Feditor%23search%2F%2Fuser%2F"/>
+        
+       <!--  Test Concept -->
+       <const name="CONCEPT_id" value="e89655fa-f083-408f-bcea-5fb7f01376ca"/>
+       <const name="CONCEPT_handle" value="http://data.beeldengeluid.nl/gtaa/1"/>
+       <const name="CONCEPT_Description_about" value="http://data.beeldengeluid.nl/1"/>
+       <const name="CONCEPT_type_resource" value="http://www.w3.org/2004/02/skos/core#Concept"/>
+       <const name="CONCEPT_notation" value="1"/>
+       <const name="CONCEPT_NUMBER_inScheme" value="1"/>
+       <const name="CONCEPT_NUMBER_topConceptOf" value="1"/>
+       <const name="CONCEPT_prefLabel" value="test"/>
+       <const name="CONCEPT_prefLabel_lang" value="nl"/>
+       <const name="CONCEPT_schema_forfilter" value="http://data.beeldengeluid.nl/gtaa/test1/testschema1"/>
+       <const name="CONCEPT_status_forfilter" value="candidate%20OR%20approved"/>
+       
+       <!-- test collection(s) -->
+       <const name="NUMBER_COLLECTIONS" value ="1"/>
+       <const name="COLLECTION_1_code" value ="collection"/>
+       <const name="COLLECTION_1_tenant" value ="mi"/>
+       <const name="COLLECTION_1_title" value ="collection1"/>
+       <const name="COLLECTION_1_description" value =""/>
+       <const name="COLLECTION_1_website" value =""/>
+       <const name="COLLECTION_1_licensename" value =""/>
+       <const name="COLLECTION_1_licenseurl" value =""/>
+       <const name="COLLECTION_1_oaibaseurl" value =""/>
+       <const name="COLLECTION_1_allowoai" value ="N"/>
+       <const name="COLLECTION_1_conceptsbaseurl" value =""/>
+       <const name="COLLECTION_1_conceptsbaseurl" value =""/>
+       <const name="COLLECTION_1_type_resource" value ="http://www.w3.org/2002/07/owl#Ontology"/>
+       <const name="COLLECTION_1_creator" value ="meertens"/>
+       <const name="COLLECTION_1_creator_about" value ="http://192.168.99.100/api/institution/mi"/>
+      
+    </php>
+</phpunit>
+
