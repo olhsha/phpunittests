@@ -23,7 +23,6 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:ns0="http://dublincore.org/documents/dcmi-terms/#">' .
                 '<rdf:Description>' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
-                '<dcterms:creator></dcterms:creator>' .
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
                 '<ns0:terms-dateSubmitted>' . $dateSubmitted . '</ns0:terms-dateSubmitted>' .
                 '<ns0:terms-dateAccepted>' . $dateAccepted . '</ns0:terms-dateAccepted>' .
