@@ -1,74 +1,48 @@
 <?php
 
 require_once dirname(__DIR__) . '/Utils/Authenticator.php';
-        
+require_once dirname(__DIR__) . '/Utils/Logging.php';
+
 class GetConceptTest extends PHPUnit_Framework_TestCase {
-    
+	public $client;
+	
+    protected function setUp() {
+    	$this->client = Authenticator::authenticate();
+    	$this->client->setConfig(array(
+    			'maxredirects' => 0,
+    			'timeout' => 30));
+    	$this->client->SetHeaders(array(
+    			'Accept' => 'text/html,application/xhtml+xml,application/xml',
+    			'Content-Type' => 'text/xml',
+    			'Accept-Language'=>'nl,en-US,en',
+    			'Accept-Encoding'=>'gzip, deflate',
+    			'Connection'=>'keep-alive')
+    	);
+    }
     
     public function testViaHandle() {
         print "\n" . "Test: get concept via its handle. ";
-        
-        $client = Authenticator::authenticate();
-        //prepare and send request 
-        
-        $client -> setUri(BASE_URI_ . '/public/api/concept?id=' . CONCEPT_handle);
-        $client->setConfig(array(
-            'maxredirects' => 0,
-            'timeout' => 30));
-        $client->SetHeaders(array(
-            'Accept' => 'text/html,application/xhtml+xml,application/xml',
-                'Content-Type' => 'text/xml',
-            'Accept-Language'=>'nl,en-US,en',
-            'Accept-Encoding'=>'gzip, deflate',
-            'Connection'=>'keep-alive')
-        );
-       $response = $client -> request(Zend_Http_Client::GET); 
-        
-       // analyse respond
-       if ($response->getStatus() != 200) {
-          print "\n " . $response->getMessage();
-       }
-      
+        $this->client->setUri(BASE_URI_ . '/api/concept?id=' . CONCEPT_handle);
+       $response = $this->client -> request(Zend_Http_Client::GET);
        $this -> AssertEquals(200, $response->getStatus());
-       $this -> assertionsForXMLRDFConcept($response);
+       //$this -> assertionsForXMLRDFConcept($response);
+       $this -> assertionsForXMLRDFSKOSConcept($response);
     }  
     
     public function testViaId() {
         print "\n" . "Test: get concept-rdf via its id. ";
-        $client = Authenticator::authenticate();
         //prepare and send request 
-        
-        $client -> setUri(BASE_URI_ . '/public/api/concept/' . CONCEPT_id . '.rdf');
-        $client->setConfig(array(
-            'maxredirects' => 0,
-            'timeout' => 30));
-        $client->SetHeaders(array(
-            'Accept' => 'text/html,application/xhtml+xml,application/xml',
-                'Content-Type' => 'text/xml',
-            'Accept-Language'=>'nl,en-US,en',
-            'Accept-Encoding'=>'gzip, deflate',
-            'Connection'=>'keep-alive')
-        );
-       $response = $client -> request(Zend_Http_Client::GET); 
-        
-       // analyse respond
-       if ($response->getStatus() != 200) {
-          print "\n " . $response->getMessage();
-       }
-      
+        $this->client -> setUri(BASE_URI_ . '/api/concept/' . CONCEPT_id . '.rdf');
+       $response = $this->client -> request(Zend_Http_Client::GET); 
        $this -> AssertEquals(200, $response->getStatus());
        $this -> assertionsForXMLRDFConcept($response);
     }
     
     public function testViaIdHTML() {
         print "\n" . "Test: get concept-html via its id. ";
-        $client = Authenticator::authenticate();
         //prepare and send request 
         
-        $client -> setUri(BASE_URI_ . '/public/api/concept/' . CONCEPT_id . '.html');
-        $client->setConfig(array(
-            'maxredirects' => 0,
-            'timeout' => 30));
+        $client -> setUri(BASE_URI_ . '/api/concept/' . CONCEPT_id . '.html');
         $client->SetHeaders(array(
             'Accept' => 'text/html,application/xhtml+xml,application/xml',
                 'Content-Type' => 'text/html',
@@ -77,12 +51,6 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
             'Connection'=>'keep-alive')
         );
        $response = $client -> request(Zend_Http_Client::GET); 
-        
-       // analyse respond
-       if ($response->getStatus() != 200) {
-          print "\n " . $response->getMessage();
-       }
-      
        $this -> AssertEquals(200, $response->getStatus());
        $this -> assertionsForHTMLConcept($response);
     }
@@ -92,7 +60,7 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
         $client = Authenticator::authenticate();
         //prepare and send request 
         
-        $client -> setUri(BASE_URI_ . '/public/api/find-concepts?format=json&fl=uuid,uri,prefLabel,class,dc_title&id=' . CONCEPT_handle);
+        $client -> setUri(BASE_URI_ . '/api/find-concepts?format=json&fl=uuid,uri,prefLabel,class,dc_title&id=' . CONCEPT_handle);
         $client->setConfig(array(
             'maxredirects' => 0,
             'timeout' => 30));
@@ -120,7 +88,7 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
         $client = Authenticator::authenticate();
         //prepare and send request 
         
-        $uri = BASE_URI_ . '/public/api/find-concepts?q=prefLabel:'. CONCEPT_prefLabel . '&status:' . CONCEPT_status_forfilter . '&tenant:' . TENANT. '&inScheme:' . CONCEPT_schema_forfilter;
+        $uri = BASE_URI_ . '/api/find-concepts?q=prefLabel:'. CONCEPT_prefLabel . '&status:' . CONCEPT_status_forfilter . '&tenant:' . TENANT. '&inScheme:' . CONCEPT_schema_forfilter;
         print "\n fileterd request's uri: " . $uri; 
         
         $client -> setUri($uri);
@@ -194,6 +162,27 @@ class GetConceptTest extends PHPUnit_Framework_TestCase {
         
     }
     
+    private function assertionsForXMLRDFSKOSConcept($response) {
+    	$dom = new Zend_Dom_Query();
+    	$dom->setDocumentXML($response->getBody());
+    
+    	$results1 = $dom->query('skos:Concept');
+    	$this -> AssertEquals(CONCEPT_Description_about, $results1 -> current()-> getAttribute('rdf:about'));
+    
+    	$results3 = $dom->query('skos:notation');
+    	$this -> AssertEquals(CONCEPT_notation, $results3 -> current()-> nodeValue);
+    
+    	$results4 = $dom->query('skos:inScheme');
+    	$this -> AssertEquals(CONCEPT_NUMBER_inScheme, count($results4));
+    
+    	$results5 = $dom->query('skos:topConceptOf');
+    	$this -> AssertEquals(CONCEPT_NUMBER_topConceptOf, count($results5));
+    
+    	$results6 = $dom->query('skos:prefLabel');
+    	$this -> AssertEquals(CONCEPT_prefLabel_lang, $results6 -> current()-> getAttribute('xml:lang'));
+    	$this -> AssertEquals(CONCEPT_prefLabel, $results6 -> current()-> nodeValue);
+    
+    }
     private function getByIndex($list, $index){
         if ($index < 0 || $index >= count($list)) {
             return null;
