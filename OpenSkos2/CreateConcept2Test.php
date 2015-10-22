@@ -11,7 +11,7 @@ require_once dirname(__DIR__) . '/Utils/RequestResponse.php';
 class CreateConcept2Test extends PHPUnit_Framework_TestCase {
     
     
-     private function test01CreateConceptWithoutURIWithDateAccepted2() {
+     public function test01CreateConceptWithoutURIWithDateAccepted2() {
         //CreateConceptTest::test01CreateConceptWithoutURIWithDateAccepted();
         // Create new concept with dateAccepted filled (implicit status APPROVED). This should not be possible. 
 
@@ -47,7 +47,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $this->AssertEquals(409, $response->getStatus());
     }
 
-    private function test02CreateConceptWithoutUriWithoutDateAccepted() {
+    public function test02CreateConceptWithoutUriWithoutDateAccepted() {
         // Create a concept without Uri and without dateAccepted , but with UniquePrefLabel. Check XML response.
         $client = Authenticator::authenticate();
         $randomn = rand(0, 2048);
@@ -76,7 +76,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $this->CheckCreatedConcept($response, $namespaces);
     }
 
-   private function test03CreateConceptWithURIAlreadyExists() {
+   public function test03CreateConceptWithURIAlreadyExists() {
         // test if creating a new concept with an URI that already exists, fails
         $client = Authenticator::authenticate();
         $randomn = rand(0, 2048);
@@ -109,7 +109,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
        
     }
 
-    private function test04CreateConceptWithoutURIUniquePrefLabelNoApiKey() {
+    public function test04CreateConceptWithoutURIUniquePrefLabelNoApiKey() {
         // create concept without URI. but with unique prefLabel. Api Key is missng.
         // todo: veoeken met verkeerde parameters moeten foutcode opleveren (collection, tenant)
         $client = Authenticator::authenticate();
@@ -136,7 +136,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $this->AssertEquals(412, $response->getStatus());
     }
 
-    private function test05CreateConceptWithURIUniquePrefLabel() {
+    public function test05CreateConceptWithURIUniquePrefLabel() {
         // Create concept with URI and with unique prefLabel, including skos:notation
         print "\n\n test05 ... \n";
         $client = Authenticator::authenticate();
@@ -169,7 +169,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $this->CheckCreatedConcept($response, $namespaces);
     }
 
-    private function test05BCreateConceptWithURIUniquePrefLabel() {
+    public function test05BCreateConceptWithURIUniquePrefLabel() {
         // Create concept with URI and with unique prefLabel, without skos:notation
         print "\n\n test05B ... \n";
         $client = Authenticator::authenticate();
@@ -231,15 +231,18 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         }
     }
 
-    private function test06CreateConceptWithURIUniquePrefLabel() {
+    public function test06CreateConceptWithURIUniquePrefLabel() {
         // Create concept without URI about, the xml is wrong
         print "\n\n test06 ... \n";
         $client = Authenticator::authenticate();
+        $randomn = rand(0, 4096);
+        $prefLabel = 'testPrefLable_' . $randomn;
+        $set = BASE_URI_ . CONCEPT_collection;
         $wrongXml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#" > ' .
                 '<rdf:Description>' .
                 //'<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>'. 
-                '<skos:prefLabel xml:lang="nl">blablabla</skos:prefLabel>' .
-                '<openskos:set rdf:resource="http://192.168.99.100/api/collections/mi:collection"/>' .
+                '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
+                '<openskos:set rdf:resource="' . $set . '"/>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -256,19 +259,21 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $this->AssertEquals(400, $response->getStatus());
     }
 
-    private function test07CreateConceptWithoutUri() {
+    public function test07CreateConceptWithoutUri() {
         // Create a concept without Uri and with unique PrefLabel. 
         print "\n\n test07 ... \n";
 
         $client = Authenticator::authenticate();
         $randomn = rand(0, 4092);
         $prefLabel = 'testPrefLable_' . $randomn;
+        $set = BASE_URI_ . CONCEPT_collection;
+        
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#" > ' .
                 '<rdf:Description>' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
                 '<dcterms:creator>Test</dcterms:creator>' .
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
-                '<openskos:set rdf:resource="http://192.168.99.100/api/collections/mi:collection"/>' .
+                '<openskos:set rdf:resource="'. $set . '"/>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -287,17 +292,20 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $this->CheckCreatedConcept($response, $namespaces);
     }
 
-    private function test08CreateConceptWithoutUriAutogenerateFalse() {
+    public function test08CreateConceptWithoutUriAutogenerateFalse() {
         // Create a concept without Uri and with unique PrefLabel.  Autogenerate parameter is false
         print "\n\n test08 ... \n";
 
         $client = Authenticator::authenticate();
         $randomn = rand(0, 4092);
         $prefLabel = 'testPrefLable_' . $randomn;
+        $set = BASE_URI_ . CONCEPT_collection;
+        
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#" > ' .
                 '<rdf:Description>' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
+                '<openskos:set rdf:resource="'. $set . '"/>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -314,7 +322,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $this->AssertEquals(400, $response->getStatus());
     }
 
-    private function test09CreateConceptWithoutUriPrefLabelExists() {
+    public function test09CreateConceptWithoutUriPrefLabelExists() {
         // Create a concept without Uri and prefLabel is not unique. 
 
         print "\n\n test09 ... \n";
@@ -322,13 +330,13 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
 
         $randomn = rand(0, 4092);
         $prefLabel = 'testPrefLable_' . $randomn;
-
+        $set = BASE_URI_ . CONCEPT_collection;
         // create the first instance of the concept
         $xml0 = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#" > ' .
                 '<rdf:Description>' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
-                '<openskos:set rdf:resource="http://192.168.99.100/api/collections/mi:collection"/>' .
+                '<openskos:set rdf:resource="'. $set . '"/>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -342,7 +350,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                     '<rdf:Description>' .
                     '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
                     '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
-                    '<openskos:set rdf:resource="http://192.168.99.100/api/collections/mi:collection"/>' .
+                    '<openskos:set rdf:resource="'. $set . '"/>' .
                     '</rdf:Description>' .
                     '</rdf:RDF>';
 
@@ -358,23 +366,25 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
             print "\n HTTPResponseHeader-Location: " . $response->getHeader('Location');
             $this->AssertEquals(409, $response->getStatus());
         } else {
-            print "ERROR while creating the first test concept, cannpt proceed woth the test! ";
+            print "ERROR while creating the first test concept, cannot proceed woth the test! ";
         }
     }
 
-   private function test10CreateConceptWithoutUriButWithNotationUniquePrefLabel() {
+   public function test10CreateConceptWithoutUriButWithNotationUniquePrefLabel() {
         // Create a concept without Uri (no rdf:about), but with notation. prefLabel is unique. 
 
         print "\n\n test10 ... \n";
         $client = Authenticator::authenticate();
         $randomn = rand(0, 4092);
         $prefLabel = 'testPrefLable_' . $randomn;
+        $set = BASE_URI_ . CONCEPT_collection;
+        $notation = 'testNotation_' . $randomn;
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#" > ' .
                 '<rdf:Description>' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
-                '<openskos:set rdf:resource="http://192.168.99.100/api/collections/mi:collection"/>' .
-                '<skos:notation>notation-xxx</skos:notation>' .
+                '<openskos:set rdf:resource="'. $set . '"/>' . 
+                '<skos:notation>' . $notation .  '</skos:notation>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -391,18 +401,19 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $this->AssertEquals(400, $response->getStatus());
     }
 
-    private function test10BCreateConceptWithoutUriButWithoutNotationUniquePrefLabel() {
+    public function test10BCreateConceptWithoutUriButWithoutNotationUniquePrefLabel() {
         // Create a concept without Uri (no rdf:about), and no notation. prefLabel is unique. 
 
         print "\n\n test10 ... \n";
         $client = Authenticator::authenticate();
         $randomn = rand(0, 4092);
+        $set = BASE_URI_ . CONCEPT_collection;
         $prefLabel = 'testPrefLable_' . $randomn;
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#" > ' .
                 '<rdf:Description>' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
-                '<openskos:set rdf:resource="http://192.168.99.100/api/collections/mi:collection"/>' .
+                 '<openskos:set rdf:resource="'. $set . '"/>'  .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
