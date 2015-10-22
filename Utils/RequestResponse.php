@@ -43,6 +43,25 @@ class RequestResponse {
         return $response;
     }
     
+    public static function GetCollection($client, $requestString, $contentType) {
+        $client->setUri($requestString);
+        $client->setConfig(array(
+            'maxredirects' => 0,
+            'timeout' => 30));
+
+        $client->SetHeaders(array(
+            'Accept' => 'text/html,application/xhtml+xml,application/xml',
+                'Content-Type' => $contentType,
+            'Accept-Language'=>'nl,en-US,en',
+            'Accept-Encoding'=>'gzip, deflate',
+            'Connection'=>'keep-alive')
+        );
+        
+        $response = $client -> request(Zend_Http_Client::GET);
+
+        return $response;
+    }
+    
     
     
     public static function setNamespaces() {

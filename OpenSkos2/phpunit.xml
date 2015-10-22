@@ -29,7 +29,7 @@
        <const name="COLLECTION_1_conceptsbaseurl" value =""/>
        <const name="COLLECTION_1_type_resource" value ="http://www.w3.org/2002/07/owl#Ontology"/>
        <const name="COLLECTION_1_creator" value ="meertens"/>
-       <const name="COLLECTION_1_creator_about" value ="http://192.168.99.100/api/institution/mi"/>
+       <const name="COLLECTION_1_creator_about_suffix" value ="/api/institution/mi"/>
       
     </php>
 </phpunit>
