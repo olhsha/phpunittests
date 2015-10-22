@@ -62,7 +62,25 @@ class RequestResponse {
         return $response;
     }
     
-    
+    public static function ImportConceptRequest($client, $postData, $boundary) {
+        
+        $client ->setUri(BASE_URI_ . '/public/editor/collections/import/collection/collection');
+        $client->setConfig(array(
+            'maxredirects' => 10,
+            'timeout' => 300));
+        $client->SetHeaders(array(
+            'Accept' => 'application/xml+rdf',
+                'Content-Type' => 'multipart/form-data; boundary=' . $boundary,
+            'Accept-Language'=>'nl,en-US,en',
+            'Accept-Encoding'=>'gzip, deflate',
+            'Host' => '192.168.99.100',
+            'Connection'=>'keep-alive')
+        );
+        
+        $client -> setRawData($postData);
+        $response = $client -> request(Zend_Http_Client::POST);
+        return $response;
+    }
     
     public static function setNamespaces() {
          $namespaces = array(

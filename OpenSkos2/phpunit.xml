@@ -30,7 +30,9 @@
        <const name="COLLECTION_1_type_resource" value ="http://www.w3.org/2002/07/owl#Ontology"/>
        <const name="COLLECTION_1_creator" value ="meertens"/>
        <const name="COLLECTION_1_creator_about_suffix" value ="/api/institution/mi"/>
-      
+       
+       <!-- <const name="CREATOR" value="http://server/unset-base/meertens.knaw.nl-importtest"/> -->
+       <const name="CREATOR" value="tester"/>
     </php>
 </phpunit>
 

@@ -1,24 +1,24 @@
 <?php
 
-require_once __DIR__."/../vendor/autoload.php"; 
+require_once dirname(__DIR__) . '/Utils/Authenticator.php';
+require_once dirname(__DIR__) . '/Utils/RequestResponse.php'; 
+require_once dirname(__DIR__) . '/Utils/Logging.php';
 
 class ImportExportTest extends \PHPUnit_Framework_TestCase {
     
     protected $notationg = "";
-    protected $clientg;
-    
     
     public function testImport() {
         print "\n" . "Testing import ... ";
-        // retrieve the current amount of tripls for the "object"
-        
-        $results0 = $this -> sparqlRetrieveTriplesForCreator(CREATOR);
+        // retrieve the current amount of triples for the "object"
+        $creator = CREATOR;
+        $results0 = $this -> sparqlRetrieveTriplesForCreator($creator);
         $before=count($results0);
         print("\n The current amount of triples for the given creator is " . $before);
         
-        //create import job
-        $this -> authenticate();
-        $response = $this -> importFromRawData();
+        $client = Authenticator::authenticate();
+        
+        $response = $this -> importFromRawData($client, $creator);
         
        // send import job 
        if ($response->getStatus() == 200) {
@@ -26,13 +26,12 @@ class ImportExportTest extends \PHPUnit_Framework_TestCase {
                 '0' => "The ouput of sending jobs: "
             );
             $retvar = 0;
-
             $sendjob = exec(PHP_JOBS_PROCESS, $output, $retvar);
         }
        
         // check 1
         // retrieve imported concept: the amount of the concepts created by CREATOR must increase by 1
-        $results1= $this ->sparqlRetrieveTriplesForCreator(CREATOR);
+        $results1= $this ->sparqlRetrieveTriplesForCreator($creator);
         print("\n The new  amount of triples for the given creator is " . count($results1) . "\n");
         // Asserting
         $this -> AssertEquals($before+1, count($results1));
@@ -45,9 +44,9 @@ class ImportExportTest extends \PHPUnit_Framework_TestCase {
     
     
     private function sparqlRetrieveTriplesForCreator($creator){
-        $query = "select ?s ?p  ?o where {?s <http://purl.org/dc/terms/creator> '" . $creator . "'@en . }";
+        $query = 'select ?s ?p  ?o where {?s <http://purl.org/dc/terms/creator> "' . $creator . '"@en . }';
         print $query . "\n";
-        $sparqlClient = new \EasyRdf\Sparql\Client('http://192.168.99.100:3030/openskos/query'); 
+        $sparqlClient = new \EasyRdf\Sparql\Client(BASE_URI_ . ':3030/openskos/query'); 
         $result = $sparqlClient -> query($query);
         return $result;
     }
@@ -57,38 +56,14 @@ class ImportExportTest extends \PHPUnit_Framework_TestCase {
        //$query = "prefix skos: <http://www.w3.org/2004/02/skos/core#> select ?s ?p  ?o where {?s  skos:notation '" . $notation .  "' . }";
        \EasyRdf\RdfNamespace::set('skos', 'http://www.w3.org/2004/02/skos/core#');
        $query = "select ?s ?p  ?o where {?s  skos:notation '" . $notation .  "' . }";
-        $sparqlClient = new \EasyRdf\Sparql\Client('http://192.168.99.100:3030/openskos/query'); 
+        $sparqlClient = new \EasyRdf\Sparql\Client(BASE_URI_ . ':3030/openskos/query'); 
         $result = $sparqlClient -> query($query);
         return $result;
     }
     
-    private function authenticate() {
-        $this -> clientg = new Zend_Http_Client();
-        $this -> clientg->setCookieJar();
-        $this -> clientg -> setUri('http://192.168.99.100/public/editor/login/authenticate');
-        $this -> clientg->setConfig(array(
-            'maxredirects' => 10,
-            'timeout' => 300));
-        $this -> clientg->SetHeaders(array(
-            'Accept' => 'text/html,application/xhtml+xml,application/xml',
-                'Content-Type' => 'application/x-www-form-urlencoded',
-            'Accept-Language'=>'en-US,en',
-            'Accept-Encoding'=>'gzip, deflate',
-            'Host' => '192.168.99.100',
-            'Referer' => 'http://192.168.99.100/public/editor/login',
-            'Connection'=>'keep-alive')
-        );
-        
-        $this -> clientg -> setParameterPost('username', USERNAME);
-        $this -> clientg -> setParameterPost('tenant', TENANT);
-        $this -> clientg -> setParameterPost('password', PASSWORD);
-        $this -> clientg -> setParameterPost('rememberme', '0');
-        $this -> clientg -> setParameterPost('login', 'Login');
-        $responseAuth = $this -> clientg -> request(Zend_Http_Client::POST);
-        print "\n Authentication response status: " . $responseAuth -> getStatus();
-        print "\n Authentication response message: " . $responseAuth -> getMessage();
-    }
-    private function importFromRawData() {
+   
+    private function importFromRawData($client, $creator) {
+        $boundaryNumeric = '36374246216810994721943965972';
         $randomn = rand(0, 2048);
         $tag= 'Import' . $randomn;
         $notation = 'textCorpus' . $randomn;
@@ -99,7 +74,7 @@ class ImportExportTest extends \PHPUnit_Framework_TestCase {
   '<rdf:Description xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"' .
   'rdf:about="http://hdl.handle.net/11148/CCR_C-test_' . $randomn .'">' .
   '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
-                 '<dcterms:creator>' . CREATOR . '</dcterms:creator>' . 
+                 '<dcterms:creator>' . $creator . '</dcterms:creator>' . 
   '<skos:notation>' . $notation . '</skos:notation>' .
   '<skos:inScheme rdf:resource="http://hdl.handle.net/11148/CCR_P-DialogueActs_1bb8b49f-7260-6731-6479-408c29cead73"/>' .
   '<skos:inScheme rdf:resource="http://hdl.handle.net/11148/CCR_P-LexicalSemantics_0d519a3c-85a6-ea17-d93c-8b89339ffc88"/>' .
@@ -123,24 +98,8 @@ class ImportExportTest extends \PHPUnit_Framework_TestCase {
   '<dcterms:modified>2015-01-20T13:09:14Z</dcterms:modified>' .
 '</rdf:Description>' .
 '</rdf:RDF>';
-        $boundary = '36374246216810994721943965972';
-        $url = 'http://192.168.99.100/public/editor/collections/import/collection/collection';
         
-      
-        // importeren
-        $this -> clientg ->setUri($url);
-        $this -> clientg->setConfig(array(
-            'maxredirects' => 10,
-            'timeout' => 300));
-        $this -> clientg->SetHeaders(array(
-            'Accept' => 'application/xml+rdf',
-                'Content-Type' => 'multipart/form-data; boundary=' . $boundary,
-            'Accept-Language'=>'nl,en-US,en',
-            'Accept-Encoding'=>'gzip, deflate',
-            'Host' => '192.168.99.100',
-            'Connection'=>'keep-alive')
-        );
-        
+       
         $part1 = 'Content-Disposition: form-data; name="MAX_FILE_SIZE"
            
 
@@ -179,7 +138,7 @@ en';
 
 Submit';
         
-        $boundary = "--" . $boundary;
+        $boundary = "--" . $boundaryNumeric;
         $boundaryLn = $boundary . "\n";
         $lnBoundaryLn = "\n" . $boundaryLn;
         $postData = $boundaryLn . $part1 . $lnBoundaryLn . $part2 . $lnBoundaryLn . $part3 . $lnBoundaryLn .
@@ -187,12 +146,12 @@ Submit';
                 $part7 . $lnBoundaryLn . $part8 . $lnBoundaryLn  . $part9. "\n" . $boundary . "--";  
         
         
-        $this -> clientg -> setRawData($postData);
-        $response = $this -> clientg -> request(Zend_Http_Client::POST);
+        $response = RequestResponse::ImportConceptRequest($client, $postData, $boundaryNumeric);
         $status = $response -> GetStatus();
         print "\n Create import response status: " . $status;
         print "\n Create import message: " . $response -> GetMessage();
-        $this -> var_error_log("\n Response body ", $response->getBody(), __DIR__."/ImportResponse.html");
+        Logging::var_error_log("\n Response body ", $response->getBody(), __DIR__."/ImportResponse.html");
+        print $postData;
         if ($status == 200) {
             $this -> notationg = $notation;
             print "\n Imported concept's notation is " .  $notation;
@@ -200,12 +159,5 @@ Submit';
         return $response;
     }
     
-     protected function var_error_log($message, $object, $fileName){
-        ob_start(); // start buffer capture
-        var_dump($object);
-        $contents = ob_get_contents();
-        ob_end_clean();
-        error_log($message . $contents, 3, $fileName);
-    }
 }
 ?>
