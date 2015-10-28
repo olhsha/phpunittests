@@ -1,6 +1,5 @@
 <?php
 
-//require_once dirname(__DIR__) . '/Utils/Authenticator.php'; 
 require_once dirname(__DIR__) . '/Utils/RequestResponse.php'; 
 
 class GetConcept2Test extends PHPUnit_Framework_TestCase {
@@ -11,9 +10,9 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
     protected $altLabel;
     protected $hiddenLabel;
     protected $notation;
+    protected $uuid;
     
     protected function setUp() {
-        //$this->client = Authenticator::authenticate();
         $this->client = new Zend_Http_Client();
         $this->client->SetHeaders(array(
             'Accept' => 'text/html,application/xhtml+xml,application/xml',
@@ -28,6 +27,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->altLabel = 'testAltLable_' . $randomn;
         $this->hiddenLabel = 'testHiddenLable_' . $randomn;
         $this->notation = 'test-xxx-' . $randomn;
+        $this -> uuid = uniqid();
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#">' .
                 '<rdf:Description rdf:about="http://192.168.99.100/api/collections/mi:collection/' . $this->notation . '">' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
@@ -35,6 +35,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:altLabel xml:lang="nl">' . $this->altLabel . '</skos:altLabel>' .
                 '<skos:hiddenLabel xml:lang="nl">' . $this->hiddenLabel . '</skos:hiddenLabel>' .
                 '<openskos:set rdf:resource="' . BASE_URI_ . CONCEPT_collection . '"/>' .
+                '<openskos:uuid>' . $this -> uuid . '</openskos:uuid>' .
                 '<skos:notation xml:lang="nl">' . $this->notation . '</skos:notation>' .
                 '<skos:inScheme  rdf:resource="http://data.beeldengeluid.nl/gtaa/Onderwerpen"/>' .
                 '<skos:topConceptOf rdf:resource="http://data.beeldengeluid.nl/gtaa/Onderwerpen"/>' .
@@ -250,10 +251,8 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         print "\n" . "Test: get concept-rdf via its id. ";
         
         if ($this -> response0->isSuccessful()) {
-            $uuid = $this -> getUuidFromResponse($this -> response0);
             // we can now perform the get-test
-            // since create generates no uuid, this test still fails.
-            $this -> client->setUri(BASE_URI_ . '/public/api/concept/' . $uuid);
+            $this -> client->setUri(BASE_URI_ . '/public/api/concept/' . $this -> uuid);
             $response = $this -> client->request(Zend_Http_Client::GET);
             if ($response->getStatus() != 200) {
                 print "\n " . $response->getMessage();
@@ -265,24 +264,86 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
             print "\n Cannot perform the test because something is wrong with creating a test concept: " . $this -> response0->getHeader('X-Error-Msg');
         }
     }
-   
-    private function getUuidFromResponse($response){
+  
+    
+    public function testViaIdXMLrdf() {
+        print "\n" . "Test: get concept-rdf via its id. ";
         
-        $dom = new Zend_Dom_Query();
-        $namespaces = RequestResponse::setNamespaces();
-        $dom->registerXpathNamespaces($namespaces);
-        $xml = $response->getBody();
-        $dom->setDocumentXML($xml);
-        
-        $sanityCheck = $dom->queryXpath('/rdf:RDF');
-        $this -> AssertEquals(1, count($sanityCheck));
-        $results1 = $dom->queryXpath('/rdf:RDF/rdf:Description');
-        $this -> AssertEquals(1, count($results1));
-        $results2 = $dom->queryXpath('/rdf:RDF/rdf:Description/openskos:uuid');
-        $this -> AssertEquals(1, count($results2));
-        return $results2 -> current() -> nodeValue;
-        
+        if ($this -> response0->isSuccessful()) {
+            // we can now perform the get-test
+            $this -> client->setUri(BASE_URI_ . '/public/api/concept/' . $this -> uuid . '.rdf');
+            $response = $this -> client->request(Zend_Http_Client::GET);
+            if ($response->getStatus() != 200) {
+                print "\n " . $response->getMessage();
+            }
+            $this->AssertEquals(200, $response->getStatus());
+            $this ->assertionsForXMLRDFConcept($response, $this -> prefLabel, $this -> altLabel, $this -> hiddenLabel, "nl", "testje (voor def ingevoegd)",  $this -> notation, 1, 1);
+            
+        } else {
+            print "\n Cannot perform the test because something is wrong with creating a test concept: " . $this -> response0->getHeader('X-Error-Msg');
+        }
     }
+      
+     
+    
+    public function testViaIdHtml() {
+        print "\n" . "Test: get concept-html via its id. ";
+        
+        if ($this -> response0->isSuccessful()) {
+            // we can now perform the get-test
+            $this -> client->setUri(BASE_URI_ . '/public/api/concept/' . $this -> uuid . '.html');
+            $response = $this -> client->request(Zend_Http_Client::GET);
+            if ($response->getStatus() != 200) {
+                print "\n " . $response->getMessage();
+            }
+            $this->AssertEquals(200, $response->getStatus());
+            $this ->assertionsForHtmlConcept($response, $this -> prefLabel, $this -> altLabel, $this -> hiddenLabel, "nl", "testje (voor def ingevoegd)",  $this -> notation, 1, 1);
+            
+        } else {
+            print "\n Cannot perform the test because something is wrong with creating a test concept: " . $this -> response0->getHeader('X-Error-Msg');
+        }
+    }
+
+   
+    public function testViaIdJson() {
+        print "\n" . "Test: get concept-json via its id. ";
+        
+        if ($this -> response0->isSuccessful()) {
+            // we can now perform the get-test
+            $this -> client->setUri(BASE_URI_ . '/public/api/concept/' . $this -> uuid . '.json');
+            $response = $this -> client->request(Zend_Http_Client::GET);
+            if ($response->getStatus() != 200) {
+                print "\n " . $response->getMessage();
+            }
+            $this->AssertEquals(200, $response->getStatus());
+            $this ->assertionsForJsonConcept($response, $this -> uuid, $this -> prefLabel, $this -> altLabel, $this -> hiddenLabel, "nl", "testje (voor def ingevoegd)",  $this -> notation, 1, 1);
+            
+        } else {
+            print "\n Cannot perform the test because something is wrong with creating a test concept: " . $this -> response0->getHeader('X-Error-Msg');
+        }
+    }
+    
+    
+    public function testViaIdJsonP() {
+        print "\n" . "Test: get concept-json via its id. ";
+        
+        if ($this -> response0->isSuccessful()) {
+            // we can now perform the get-test
+            $this -> client->setUri(BASE_URI_ . '/public/api/concept/' . $this->uuid . '.jsonp&callback=test');
+            $response = $this -> client->request(Zend_Http_Client::GET);
+            if ($response->getStatus() != 200) {
+                print "\n " . $response->getMessage();
+            }
+            $this->AssertEquals(200, $response->getStatus());
+            $this ->assertionsForJsonPConcept($response, $this -> uuid, $this -> prefLabel, $this -> altLabel, $this -> hiddenLabel, "nl", "testje (voor def ingevoegd)",  $this -> notation, 1, 1);
+            
+        } else {
+            print "\n Cannot perform the test because something is wrong with creating a test concept: " . $this -> response0->getHeader('X-Error-Msg');
+        }
+    }
+    
+    
+   
     
     private function assertionsForManyConceptsRows($response, $rows) {
         
@@ -320,9 +381,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $namespaces = RequestResponse::setNamespaces();
         $dom->registerXpathNamespaces($namespaces);
         $xml = $response->getBody();
-          //corretions should be removed after bug fixing
-        $xmlCorrected1 = str_replace ('dc:creator', 'dcterms:creator', $xml);
-        $dom->setDocumentXML($xmlCorrected1);
+        $dom->setDocumentXML($xml);
         
         $sanityCheck = $dom->queryXpath('/rdf:RDF');
         $this -> AssertEquals(1, count($sanityCheck));
@@ -333,16 +392,14 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         
     }
     
+    
     private function assertionsForXMLRDFConcept($response, $prefLabel,  $altLabel, $hiddenLabel, $lang, $definition, $notation, $topConceptOf, $inScheme) {
         
         $dom = new Zend_Dom_Query();
         $namespaces = RequestResponse::setNamespaces();
-        $dom->registerXpathNamespaces($namespaces);
+        $dom ->registerXpathNamespaces($namespaces);
         $xml = $response->getBody();
-        
-        //corretions should be removed after bug fixing
-        $xmlCorrected1 = str_replace ('dc:creator', 'dcterms:creator', $xml);
-        $dom->setDocumentXML($xmlCorrected1);
+        $dom->setDocumentXML($xml);
         
         $results1 = $dom->queryXpath('/rdf:RDF/rdf:Description');
         $this -> AssertEquals(1, count($results1));
@@ -375,12 +432,75 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $results7 = $dom->query('skos:definition');
         $this -> AssertEquals($definition, $results7 -> current()-> nodeValue);
         
-        $results9 = $dom->queryXpath('/rdf:RDF/rdf:Description/dcterms:creator');
+        $results9 = $dom->query('dcterms:creator');
         $this -> AssertStringStartsWith(BASE_URI_ , $results9 -> current()-> getAttribute('rdf:resource'));
         
         $results8 = $dom->query('openskos:set');
         $this -> AssertEquals(BASE_URI_ . CONCEPT_collection, $results8 -> current()-> getAttribute('rdf:resource'));
         
+    }
+    
+     
+    private function getByIndex($list, $index){
+        if ($index < 0 || $index >= count($list)) {
+            return null;
+        }
+        $list -> rewind();
+        $i=0;
+        while ($i<$index){
+            $list -> next();
+            $i++;
+        }
+        return $list -> current();
+    }
+    
+    private function assertionsForHTMLConcept($response, $prefLabel, $altLabel, $hiddenLabel, $lang, $definition, $notation, $topConceptOf, $inScheme) {
+        $dom = new Zend_Dom_Query();
+        $dom->setDocumentHtml($response->getBody());
+        
+        //does not work because of . : $results1 = $dom->query('dl > dd  > a[href="http://hdl.handle.net/11148/CCR_C-4046_944cc750-1c29-ccf0-fb68-4d00385d7b42"]');
+        $resultsUri1 = $dom->query('dl > dt');
+        
+        $propertyName = $this -> getByIndex($resultsUri1, 2) -> nodeValue;
+        $this -> AssertEquals("SKOS Class:", $propertyName);
+        
+        $resultsUri2 = $dom->query('dl > dd > a');
+        $property = $this -> getByIndex($resultsUri2, 2);
+        $this -> AssertEquals("http://www.w3.org/2004/02/skos/core#Concept", $property -> nodeValue);
+        $this -> AssertEquals("http://www.w3.org/2004/02/skos/core#Concept", $property -> getAttribute('href'));
+        
+        $h3s = $dom -> query('h3');
+        $inSchemeName =  $this -> getByIndex($h3s, 0) -> nodeValue;
+        $this -> AssertEquals("inScheme", $inSchemeName);
+        
+        $lexLabels =  $this -> getByIndex($h3s, 2) -> nodeValue;
+        $this -> AssertEquals("LexicalLabels", $lexLabels);
+        
+        $h4s = $dom -> query('h4');
+        $altLabelName =  $this -> getByIndex($h4s, 2) -> nodeValue;
+        $this -> AssertEquals("skos:http://www.w3.org/2004/02/skos/core#altLabel", $altLabelName);
+        $prefLabelName =  $this -> getByIndex($h4s, 4) -> nodeValue;
+        $this -> AssertEquals("skos:http://www.w3.org/2004/02/skos/core#prefLabel", $prefLabelName);
+        $notationName =  $this -> getByIndex($h4s, 5) -> nodeValue;
+        $this -> AssertEquals("skos:http://www.w3.org/2004/02/skos/core#notation", $notationName);
+        
+        $list = $dom -> query('ul > li > a > span');
+        $prefLabelVal = $this ->getByIndex($list, 4) -> nodeValue;
+        $this -> AssertEquals($prefLabel, $prefLabelVal);
+        
+    }
+    
+    private function assertionsForJsonConcept($response,  $uuid, $prefLabel,  $altLabel, $hiddenLabel, $lang, $definition, $notation, $topConceptOf, $inScheme) {
+        $json = $response->getBody();
+        $arrays = json_decode($json, true);
+        $this -> assertEquals($uuid, $arrays["uuid"]);
+        $this -> assertEquals($altLabel, $arrays["altLabel@nl"][0]);
+        $this -> assertEquals($prefLabel, $arrays["prefLabel@nl"]);
+        return $json;
+    }
+    
+    private function assertionsForJsonPConcept($response, $uuid, $altLabel, $hiddenLabel, $lang, $definition, $notation, $topConceptOf, $inScheme, $altLabel, $hiddenLabel, $lang, $definition, $notation, $topConceptOf, $inScheme) {
+        $json = $this->asseryionsForJason($response, $uuid, $altLabel, $hiddenLabel, $lang, $definition, $notation, $topConceptOf, $inScheme, $altLabel, $hiddenLabel, $lang, $definition, $notation, $topConceptOf, $inScheme);
     }
 
 }
