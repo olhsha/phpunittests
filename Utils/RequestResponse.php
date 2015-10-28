@@ -10,10 +10,7 @@ class RequestResponse {
     
     public static function CreateConceptRequest($client, $xml, $autoGenerateIdentifiers) {
         $client->setUri(BASE_URI_ . "/public/api/concept?");
-        $client->setConfig(array(
-            'maxredirects' => 0,
-            'timeout' => 30));
-
+        
         $response = $client
                 ->setEncType('text/xml')
                 ->setRawData($xml)

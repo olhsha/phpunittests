@@ -1,21 +1,30 @@
 <?php
 
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-require_once dirname(__DIR__) . '/Utils/Authenticator.php';
 require_once dirname(__DIR__) . '/Utils/RequestResponse.php'; 
 
 class CreateConcept2Test extends PHPUnit_Framework_TestCase {
     
+    private $client;
     
+    protected function setUp() {
+        $this->client = new Zend_Http_Client();
+        $this->client->setConfig(array(
+            'maxredirects' => 0,
+            'timeout' => 30));
+
+        $this->client->SetHeaders(array(
+            'Accept' => 'text/html,application/xhtml+xml,application/xml',
+            'Content-Type' => 'text/xml',
+            'Accept-Language' => 'nl,en-US,en',
+            'Accept-Encoding' => 'gzip, deflate',
+            'Connection' => 'keep-alive')
+        );
+    }
      public function test01CreateConceptWithoutURIWithDateAccepted2() {
         //CreateConceptTest::test01CreateConceptWithoutURIWithDateAccepted();
         // Create new concept with dateAccepted filled (implicit status APPROVED). This should not be possible. 
-
-        $client = Authenticator::authenticate();
+        
+    
         $randomn = rand(0, 2048);
         $prefLabel = 'testPrefLable_' . $randomn;
         $dateSubmitted = date(DateTime::ISO8601); //'2015-10-01T15:06:58Z';//
@@ -32,7 +41,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
-        $response = RequestResponse::CreateConceptRequest($client, $xml, "true");
+        $response = RequestResponse::CreateConceptRequest($this -> client, $xml, "true");
 
         if ($response->isSuccessful()) {
             print "\n Concept created \n";
@@ -47,9 +56,9 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $this->AssertEquals(409, $response->getStatus());
     }
 
+    
     public function test02CreateConceptWithoutUriWithoutDateAccepted() {
         // Create a concept without Uri and without dateAccepted , but with UniquePrefLabel. Check XML response.
-        $client = Authenticator::authenticate();
         $randomn = rand(0, 2048);
         $prefLabel = 'testPrefLable_' . $randomn;
         $set = BASE_URI_ . CONCEPT_collection;
@@ -62,7 +71,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
-        $response = RequestResponse::CreateConceptRequest($client, $xml, "true");
+        $response = RequestResponse::CreateConceptRequest($this-> client, $xml, "true");
 
         if ($response->isSuccessful()) {
             print "\n Concept created \n";
@@ -76,9 +85,9 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $this->CheckCreatedConcept($response, $namespaces);
     }
 
+   
    public function test03CreateConceptWithURIAlreadyExists() {
         // test if creating a new concept with an URI that already exists, fails
-        $client = Authenticator::authenticate();
         $randomn = rand(0, 2048);
         $prefLabel = 'testPrefLable_' . $randomn;
         $notation = 'notation_' . $randomn;
@@ -93,22 +102,26 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
-        // create the first concept with whoch we will compare
-        $response = RequestResponse::CreateConceptRequest($client, $xml, "false");
+        // create the first concept with which we will compare
+        $response = RequestResponse::CreateConceptRequest($this->client, $xml, "false");
 
-        if ($response->isSuccessful()) {
+        if ($response->getStatus() == 201) {
             print "\n First concept created \n";
             $xml2= str_replace ('testPrefLable_', '_another_testPrefLable_', $xml);
-           $response2 = RequestResponse::CreateConceptRequest($client, $xml2, "false");
-           $this->AssertEquals(409, $response2->getStatus());
+           $response2 = RequestResponse::CreateConceptRequest($this->client, $xml2, "false");
+           print "\n" . $response2 -> getMessage() . ". Error: ". $response->getHeader('X-Error-Msg') . "\n\n" . $response2 -> getBody() . "\n\n";
+           $this->AssertEquals(400, $response2->getStatus());
 
         } else {
-            print "\n Failed to create the first concept concept: " . $response->getHeader('X-Error-Msg') . "\n";
+            print "\n Failed to create the first concept: " . $response->getHeader('X-Error-Msg') . "\n";
+            print "\n Failed to create the first concept, message: " . $response->getMessage() . "\n";
+            var_dump($response -> getBody());
         }
 
        
     }
 
+    /*
     public function test04CreateConceptWithoutURIUniquePrefLabelNoApiKey() {
         // create concept without URI. but with unique prefLabel. Api Key is missng.
         // todo: veoeken met verkeerde parameters moeten foutcode opleveren (collection, tenant)
@@ -429,7 +442,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         print "\n HTTPResponseHeader-Location: " . $response->getHeader('Location');
         $this->AssertEquals(400, $response->getStatus());
     }
-
+*/
     private function CheckCreatedConcept($response, $namespaces) {
         $dom = new Zend_Dom_Query();
         $dom->setDocumentXML($response->getBody());
@@ -438,16 +451,16 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $elem = $dom->queryXpath('/rdf:RDF');
         $this->assertEquals($elem->current()->nodeType, XML_ELEMENT_NODE, 'The root node of the response is not an element');
 
-        // $description = $dom->queryXpath('/rdf:RDF/rdf:Description'); ???
-        $conceptElement = $dom->queryXpath('/rdf:RDF/skos:Concept');
-        $this->assertEquals(1, $conceptElement->count(), "Concept element is not declared");
-        $resURI = $conceptElement->current()->getAttribute("rdf:about");
+        $description = $dom->queryXpath('/rdf:RDF/rdf:Description'); 
+        $this->assertEquals(1, $description->count(), "rdf:Description element is not declared");
+        $resURI = $description->current()->getAttribute("rdf:about");
         $this->assertNotEquals("", $resURI, "No valid uri for SKOS concept");
         $status = $dom->queryXpath('/rdf:RDF/skos:Concept/openskos:status');
         $this->assertEquals(1, $status->count(), "No valid uri for openkos:status");
         $this->assertEquals("Candidate", $status->current()->nodeValue, "Satus is not Candidate, as it must be by just created concept.");
         print "\n New concept is created with URI $resURI  and status" . $status->current()->nodeValue;
     }
+     
 
 }
 

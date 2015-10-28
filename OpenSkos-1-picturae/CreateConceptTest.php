@@ -15,16 +15,16 @@ class CreateConceptTest extends PHPUnit_Framework_TestCase {
         $dateSubmitted = date(DateTime::ISO8601);//'2015-10-01T15:06:58Z';//
         $dateAccepted = '2015-10-02T10:31:35Z';// date(DateTime::ISO8601);'2015-10-01T15:06:58Z';
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:dcterms="http://purl.org/dc/terms/" > ' .
-               '<rdf:Description>' . 
-                '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>'. 
-    '<dcterms:creator>Test</dcterms:creator>' .
-    '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' . 
-    '<dcterms:dateSubmitted>' . $dateSubmitted . '</dcterms:dateSubmitted>' .
-    '<dcterms:dateAccepted>' . $dateAccepted . '</dcterms:dateAccepted>' .
-    '<skos:inScheme rdf:resource="http://data.beeldengeluid.nl/gtaa/GeografischeNamen"/>'.
-  '</rdf:Description>' .
-'</rdf:RDF>';
-        
+                '<rdf:Description>' .
+                '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
+                '<dcterms:creator>Test</dcterms:creator>' .
+                '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
+                '<dcterms:dateSubmitted>' . $dateSubmitted . '</dcterms:dateSubmitted>' .
+                '<dcterms:dateAccepted>' . $dateAccepted . '</dcterms:dateAccepted>' .
+                '<skos:inScheme rdf:resource="http://data.beeldengeluid.nl/gtaa/GeografischeNamen"/>' .
+                '</rdf:Description>' .
+                '</rdf:RDF>';
+
         $client -> setUri(BASE_URI_ .  "/public/api/concept?");
         $client ->setConfig(array(
         'maxredirects' => 0,

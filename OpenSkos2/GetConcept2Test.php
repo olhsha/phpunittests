@@ -4,15 +4,16 @@ require_once dirname(__DIR__) . '/Utils/RequestResponse.php';
 
 class GetConcept2Test extends PHPUnit_Framework_TestCase {
   
-    protected $client;
-    protected $response0; 
-    protected $prefLabel;
-    protected $altLabel;
-    protected $hiddenLabel;
-    protected $notation;
-    protected $uuid;
+    private $client;
+    private $response0; 
+    private $prefLabel;
+    private $altLabel;
+    private $hiddenLabel;
+    private $notation;
+    private $uuid;
+    private $about;
     
-    protected function setUp() {
+   protected function setUp() {
         $this->client = new Zend_Http_Client();
         $this->client->SetHeaders(array(
             'Accept' => 'text/html,application/xhtml+xml,application/xml',
@@ -28,8 +29,9 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->hiddenLabel = 'testHiddenLable_' . $randomn;
         $this->notation = 'test-xxx-' . $randomn;
         $this -> uuid = uniqid();
+        $this -> about = BASE_URI_ . CONCEPT_collection . "/" .$this -> notation;
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#">' .
-                '<rdf:Description rdf:about="http://192.168.99.100/api/collections/mi:collection/' . $this->notation . '">' .
+                '<rdf:Description rdf:about="' . $this -> about . '">' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
                 '<skos:prefLabel xml:lang="nl">' . $this->prefLabel . '</skos:prefLabel>' .
                 '<skos:altLabel xml:lang="nl">' . $this->altLabel . '</skos:altLabel>' .
@@ -246,6 +248,23 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         }
     }
    
+    public function testViaHandleXML() {
+        print "\n" . "Test: get concept-rdf via its id. ";
+        
+        if ($this -> response0->isSuccessful()) {
+            // we can now perform the get-test
+            $this -> client->setUri(BASE_URI_ . '/public/api/concept/?id=' . $this -> about);
+            $response = $this -> client->request(Zend_Http_Client::GET);
+            if ($response->getStatus() != 200) {
+                print "\n " . $response->getMessage();
+            }
+            $this->AssertEquals(200, $response->getStatus());
+            $this ->assertionsForXMLRDFConcept($response, $this -> prefLabel, $this -> altLabel, $this -> hiddenLabel, "nl", "testje (voor def ingevoegd)",  $this -> notation, 1, 1);
+            
+        } else {
+            print "\n Cannot perform the test because something is wrong with creating a test concept: " . $this -> response0->getHeader('X-Error-Msg');
+        }
+    }
     
     public function testViaIdXML() {
         print "\n" . "Test: get concept-rdf via its id. ";
