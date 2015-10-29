@@ -1,1 +1,18 @@
-Get concepts: add tests for rows and start
+-- All tests: write tearDown (or teardown after class) with removing concepts from the database
+
+-- Get concepts: add tests for rows and start
+
+-- get concepts: setUp --> setUpBeforeClass with static fields
+
+-- Autocomplete: see totod comments there
+
+-- Rechek import
+
+-- Export
+
+-- Fetch collections
+
+-- fetch institutions
+
+-- see what is left from Menzo/Matej's list
+

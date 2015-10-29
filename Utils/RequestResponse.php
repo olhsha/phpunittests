@@ -79,6 +79,16 @@ class RequestResponse {
         return $response;
     }
     
+    public static function AutocomleteRequest($client, $word, $parameterString) {
+        $uri = BASE_URI_ . '/public/api/autocomplete/' . $word;
+        if ($parameterString !=null) {
+            $uri = $uri . $parameterString;
+        }
+        $client ->setUri($uri);
+        $response = $client -> request(Zend_Http_Client::GET);
+        return $response;
+    }
+    
     public static function setNamespaces() {
          $namespaces = array(
             "rdf" => "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
@@ -89,5 +99,7 @@ class RequestResponse {
         );
         return $namespaces;
     }
+    
+    
 
 }

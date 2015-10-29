@@ -54,7 +54,6 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
     
     public function testViaPrefLabel2() {
         print "\n" . "Test: get concept-rdf via its prefLabel. ";
-        
         if ($this -> response0->isSuccessful()) {
             // we can now perform the get-test
             $this -> client->setUri(BASE_URI_ . '/public/api/find-concepts?q=prefLabel:' . $this -> prefLabel);
