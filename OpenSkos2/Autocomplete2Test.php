@@ -1,11 +1,5 @@
 <?php
 
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 require_once dirname(__DIR__) . '/Utils/RequestResponse.php'; 
 
 class Autocomplete2Test extends PHPUnit_Framework_TestCase {
@@ -13,8 +7,9 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
     private static $client;
     private static $success;
     private static $prefs;
+    private static $labelMap;
     
-   public static function setUpBeforeClass() {
+    public static function setUpBeforeClass() {
        
         self::$client = new Zend_Http_Client();
         self::$client->setConfig(array(
@@ -27,20 +22,27 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
             'Accept-Encoding'=>'gzip, deflate',
             'Connection'=>'keep-alive')
         );
+        
+        self::$labelMap = array (
+           PREF_LABEL => PREF_LABEL . "_",
+           ALT_LABEL => ALT_LABEL . "_",
+           HID_LABEL => HID_LABEL . "_",
+           NOTATION => NOTATION . "_",
+        );
    
         // create test concepts
         
         $letters = range('a', 'z'); 
-        self::$prefs[0] = "t" . uniqid();
+        self::$prefs[0] = uniqid();
         $i = 1;
         
         foreach ($letters as $letter) {
             self::$prefs[$i] = self::$prefs[$i-1] . $letter;
             $randomn = rand(0, 10000);
-            $prefLabel = self::$prefs[$i] . $randomn;
-            $altLabel = 'alt-Lable_' . self::$prefs[$i] . $randomn;
-            $hiddenLabel = 'hidden-Lable_' . self::$prefs[$i] . $randomn;
-            $notation = 'test-notation-' . self::$prefs[$i] . $randomn;
+            $prefLabel = self::$labelMap[PREF_LABEL] . self::$prefs[$i] . $randomn;
+            $altLabel = self::$labelMap[ALT_LABEL] . self::$prefs[$i] . $randomn;
+            $hiddenLabel = self::$labelMap[HID_LABEL] . self::$prefs[$i] . $randomn;
+            $notation = self::$labelMap[NOTATION]  . self::$prefs[$i] . $randomn;
             $uuid = uniqid();
             $about = BASE_URI_ . CONCEPT_collection . "/" . $notation;
             $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#">' .
@@ -72,55 +74,138 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
          
     }
     
- 
-    public function testAutocompletechekPrefLabel() {
-        print "\n testAutocompletePrefLabel";
-        $this ->autocompleteAlphabeticWithPrefix("", null);
-    }
-     
-    public function testAutocompleteSearchPrefLabelExplicit() {
-        print "\n testAutocompletePrefLabel";
-        $this ->autocompleteAlphabeticWithPrefix("", "?searchLabel=prefLabel");
-    }
     
-    public function testAutocompleteCheckPrefLabelReturnAltExplicit() {
-        print "\n testAutocompletePrefLabel";
-        $this ->autocompleteAlphabeticWithPrefix("", "?returnLabel=altLabel");
-        // todo: check if the retunr label are as expected, starting with altLa
-    }
-   
-    public function testAutocompleteCheckAltLabel() {
-        print "\n testAutocompleteAltLabel";
-        $this ->autocompleteAlphabeticWithPrefix('alt-Lable_', null);
-    }
-     
-    public function testAutocompleteCheckHiddenLabel() {
-        print "\n testAutocompleteHiddenLabel";
-        $this ->autocompleteAlphabeticWithPrefix('hidden-Lable_', null);
-    }
-    
-    // todo: add tests for language
-    
-    // todo: add test for format-html that should fail
-    
-    private function autocompleteAlphabeticWithPrefix($prefix, $parameterString) {
-        if (self::$success) {
-            $lim = count(self::$prefs) - 1; // must be 26
-            for ($i=1; $i<=$lim; $i++) {
-                $response = RequestResponse::AutocomleteRequest(self::$client, $prefix . self::$prefs[$i], $parameterString);
+    public function testAutocompleteInLoopNoParams() {
+        print "\n testAutocomplete in loop ";
+         if (self::$success) {
+            $numPrefixes = count(self::$prefs);
+            $lim = $numPrefixes - 1; // must be 26
+            for ($i = 1; $i <= $lim; $i++) {
+                $word = self::$labelMap[PREF_LABEL] . self::$prefs[$i];
+                $response = RequestResponse::AutocomleteRequest(self::$client, $word, "");
                 if ($response->getStatus() != 200) {
                     $this->failureMessaging($response);
                 }
                 $this->AssertEquals(200, $response->getStatus());
                 $json = $response->getBody();
-                $array = json_decode($json, true);
+                $arrayjson = json_decode($json, true);
                 //var_dump($array);
-                $this->AssertEquals(27 - $i, count($array));
+                // todo: for now the spec is unclear. correct after the spec is clarified.
+                $this->AssertEquals($numPrefixes - $i, count($arrayjson));
             }
         } else {
             print "\n Cannot perform the test because something is wrong with creating test concepts, see above. \n ";
-        } 
+        }
     }
+    
+    
+    public function testAutocompleteSearchPrefLabel() {
+        print "\n testAutocomplete search alt Label";
+        if (self::$success) {
+            $word = self::$labelMap[ALT_LABEL] . self::$prefs[1]; // prefLabel<someuuid>a.
+            $response = RequestResponse::AutocomleteRequest(self::$client, $word, "?searchLabel=prefLabel");
+            if ($response->getStatus() != 200) {
+                $this->failureMessaging($response);
+            }
+            $this->AssertEquals(200, $response->getStatus());
+            $json = $response->getBody();
+            $arrayjson = json_decode($json, true);
+            $this->AssertEquals(26, count($arrayjson));
+        } else {
+            print "\n Cannot perform the test because something is wrong with creating test concepts, see above. \n ";
+        }
+    }
+    
+    public function testAutocompleteSearchAltLabelWithNoOccurences() {
+        print "\n testAutocomplete search alt Label";
+        if (self::$success) {
+            $searchword = self::$labelMap[PREF_LABEL] . self::$prefs[1]; // should not occur in lat labels
+            $response = RequestResponse::AutocomleteRequest(self::$client, $searchword, "?searchLabel=altLabel");
+            if ($response->getStatus() != 200) {
+                $this->failureMessaging($response);
+            }
+            $this->AssertEquals(200, $response->getStatus());
+            $json = $response->getBody();
+            $arrayjson = json_decode($json, true);
+            $this->AssertEquals(0, count($arrayjson));
+        } else {
+            print "\n Cannot perform the test because something is wrong with creating test concepts, see above. \n ";
+        }
+    }
+    
+     public function testAutocompleteReturnAltLabel() {
+        print "\n testAutocomplete return alt Label";
+        if (self::$success) {
+            $searchword = self::$labelMap[PREF_LABEL] . self::$prefs[1]; // prefLabel_<someuuid>a.
+            $returnword = self::$labelMap[ALT_LABEL] . self::$prefs[1]; // altLabel_<someuuid>a.
+            $response = RequestResponse::AutocomleteRequest(self::$client, $searchword, "?returnLabel=altLabel");
+            if ($response->getStatus() != 200) {
+                $this->failureMessaging($response);
+            }
+            $this->AssertEquals(200, $response->getStatus());
+            $json = $response->getBody();
+            $arrayjson = json_decode($json, true);
+            $this->AssertEquals(26, count($arrayjson));
+            for ($i=0; $i<count($arrayjson); $i++){
+               $this ->assertStringStartsWith($returnword, $arrayjson[$i]);
+           }
+        } else {
+            print "\n Cannot perform the test because something is wrong with creating test concepts, see above. \n ";
+        }
+    }
+     
+    
+    public function testAutocompleteLangNL() {
+        print "\n testAutocomplete search pref Label";
+        if (self::$success) {
+            $word = self::$labelMap[PREF_LABEL] . self::$prefs[1]; // prefLabel<someuuid>a.
+            $response = RequestResponse::AutocomleteRequest(self::$client, $word, "?lang=nl");
+            if ($response->getStatus() != 200) {
+                $this->failureMessaging($response);
+            }
+            $this->AssertEquals(200, $response->getStatus());
+            $json = $response->getBody();
+            $arrayjson = json_decode($json, true);
+            $this->AssertEquals(26, count($arrayjson));
+        } else {
+            print "\n Cannot perform the test because something is wrong with creating test concepts, see above. \n ";
+        }
+    }
+    
+    // to do: make more advanced test with "en" non-zero occurences or so
+    public function testAutocompleteLangEN() {
+        print "\n testAutocomplete search pref Label";
+        if (self::$success) {
+            $word = self::$labelMap[PREF_LABEL] . self::$prefs[1]; // prefLabel<someuuid>a.
+            $response = RequestResponse::AutocomleteRequest(self::$client, $word, "?lang=en");
+            if ($response->getStatus() != 200) {
+                $this->failureMessaging($response);
+            }
+            $this->AssertEquals(200, $response->getStatus());
+            $json = $response->getBody();
+            $arrayjson = json_decode($json, true);
+            $this->AssertEquals(0, count($arrayjson));
+        } else {
+            print "\n Cannot perform the test because something is wrong with creating test concepts, see above. \n ";
+        }
+    }
+    
+    
+    public function testAutocompleteFormatHTML() {
+        print "\n testAutocomplete search pref Label";
+        if (self::$success) {
+            $word = self::$labelMap[PREF_LABEL] . self::$prefs[1]; // prefLabel<someuuid>a.
+            $response = RequestResponse::AutocomleteRequest(self::$client, $word, "?format=html");
+            if ($response->getStatus() != 200) {
+                $this->failureMessaging($response);
+            }
+            $this->AssertEquals(200, $response->getStatus());
+            // todo: add some chek when it becomes clear how the ourput looks like
+        } else {
+            print "\n Cannot perform the test because something is wrong with creating test concepts, see above. \n ";
+        }
+    }
+   
     
     private function failureMessaging($response) {
         print "\n Failed to create concept, error message: " . $response->getHeader('X-Error-Msg');

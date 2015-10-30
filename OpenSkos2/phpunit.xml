@@ -14,6 +14,16 @@
        <const name="CONCEPT_collection" value="/api/collections/mi:collection"/>
        <const name="CONCEPT_type_resource" value="http://www.w3.org/2004/02/skos/core#Concept"/>
        
+       <!--  Autocomplete -->
+       <const name="RETURN_LABEL" value="returnLabel"/>
+       <const name="SEARCH_LABEL" value="searchLabel"/>
+       <const name="LANG" value="lang"/>
+       <const name="FORMAT" value="format"/>
+       <const name="PREF_LABEL" value="prefLabel"/>
+       <const name="ALT_LABEL" value="altLabel"/>
+       <const name="HID_LABEL" value="hiddenLabel"/>
+       <const name="NOTATION" value="notation"/>
+       
        <!-- test collection(s) -->
        <const name="NUMBER_COLLECTIONS" value ="1"/>
        <const name="COLLECTION_1_code" value ="collection"/>

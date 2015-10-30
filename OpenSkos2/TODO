@@ -1,12 +1,12 @@
--- All tests: write tearDown (or teardown after class) with removing concepts from the database
+-- All tests: write tearDown (or teardown after class) with removing concepts from the database. Not possible now because "delete" does not work.
 
 -- Get concepts: add tests for rows and start
 
 -- get concepts: setUp --> setUpBeforeClass with static fields
 
--- Autocomplete: see totod comments there
+-- Autocomplete: see todos comments there
 
--- Rechek import
+-- Recheck import
 
 -- Export
 
@@ -15,4 +15,6 @@
 -- fetch institutions
 
 -- see what is left from Menzo/Matej's list
+
+
 

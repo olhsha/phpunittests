@@ -80,12 +80,23 @@ class RequestResponse {
     }
     
     public static function AutocomleteRequest($client, $word, $parameterString) {
-        $uri = BASE_URI_ . '/public/api/autocomplete/' . $word;
-        if ($parameterString !=null) {
-            $uri = $uri . $parameterString;
-        }
+        $uri = BASE_URI_ . '/public/api/autocomplete/' . $word .  $parameterString;
         $client ->setUri($uri);
         $response = $client -> request(Zend_Http_Client::GET);
+        return $response;
+    }
+    
+    public static function DeleteRequest($client, $id){
+        $client ->setUri(BASE_URI_ . '/public/api/concept');
+        $client->setConfig(array(
+            'maxredirects' => 0,
+            'timeout' => 30));
+        $response = $client
+                ->setParameterGet('tenant', TENANT)
+                ->setParameterGet('collection', COLLECTION_1_code)
+                ->setParameterGet('key', API_KEY)
+                ->setParameterGet('id', $id)
+                ->request('DELETE');
         return $response;
     }
     
