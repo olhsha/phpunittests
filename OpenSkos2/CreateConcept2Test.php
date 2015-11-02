@@ -20,6 +20,11 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
             'Connection' => 'keep-alive')
         );
     }
+    
+    protected function tearDown() {
+        
+    }
+    
      public function test01CreateConceptWithoutURIWithDateAccepted2() {
         //CreateConceptTest::test01CreateConceptWithoutURIWithDateAccepted();
         // Create new concept with dateAccepted filled (implicit status APPROVED). This should not be possible. 

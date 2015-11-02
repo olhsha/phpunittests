@@ -1,13 +1,14 @@
 <?php
 
 require_once dirname(__DIR__) . '/Utils/RequestResponse.php'; 
-
+require_once dirname(__DIR__) . '/Utils/Logging.php';
 class Autocomplete2Test extends PHPUnit_Framework_TestCase {
   
     private static $client;
     private static $success;
     private static $prefs;
     private static $labelMap;
+    private static $abouts;
     
     public static function setUpBeforeClass() {
        
@@ -22,7 +23,7 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
             'Accept-Encoding'=>'gzip, deflate',
             'Connection'=>'keep-alive')
         );
-        
+        self::$abouts = array();
         self::$labelMap = array (
            PREF_LABEL => PREF_LABEL . "_",
            ALT_LABEL => ALT_LABEL . "_",
@@ -54,6 +55,7 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
                     '<openskos:set rdf:resource="' . BASE_URI_ . CONCEPT_collection . '"/>' .
                     '<openskos:uuid>' . $uuid . '</openskos:uuid>' .
                     '<openskos:status>approved</openskos:status>' .
+                    '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
                     '<skos:notation xml:lang="nl">' . $notation . '</skos:notation>' .
                     '<skos:inScheme  rdf:resource="http://data.beeldengeluid.nl/gtaa/Onderwerpen"/>' .
                     '<skos:topConceptOf rdf:resource="http://data.beeldengeluid.nl/gtaa/Onderwerpen"/>' .
@@ -63,7 +65,8 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
 
             $response0 = RequestResponse::CreateConceptRequest(self::$client, $xml, "false");
             if ($response0 ->getStatus() !=201) {
-                $this -> failureMessaging($response0);
+                array_push(self::$abouts,$about);  
+                Logging::failureMessaging($response0, "creating test concept");
                 self::$success = false;
                 return;
             } 
@@ -74,6 +77,16 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
          
     }
     
+    // delete all created concepts
+    public static function tearDownAfterClass() {
+        parent::tearDownAfterClass();
+        foreach(self::$abouts as $about) {
+           $response= RequestResponse::DeleteRequest(self::$client, $about);
+           if ($response -> getStatus() != 200) {
+               Logging::failureMessaging($response, 'deleting test concept ' . $about);
+           }
+        }
+    }
     
     public function testAutocompleteInLoopNoParams() {
         print "\n testAutocomplete in loop ";
@@ -84,7 +97,7 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
                 $word = self::$labelMap[PREF_LABEL] . self::$prefs[$i];
                 $response = RequestResponse::AutocomleteRequest(self::$client, $word, "");
                 if ($response->getStatus() != 200) {
-                    $this->failureMessaging($response);
+                    Logging::failureMessaging($response);
                 }
                 $this->AssertEquals(200, $response->getStatus());
                 $json = $response->getBody();
@@ -105,7 +118,7 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
             $word = self::$labelMap[ALT_LABEL] . self::$prefs[1]; // prefLabel<someuuid>a.
             $response = RequestResponse::AutocomleteRequest(self::$client, $word, "?searchLabel=prefLabel");
             if ($response->getStatus() != 200) {
-                $this->failureMessaging($response);
+                Logging::failureMessaging($response, 'autocomplete on word '. $word);
             }
             $this->AssertEquals(200, $response->getStatus());
             $json = $response->getBody();
@@ -122,7 +135,7 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
             $searchword = self::$labelMap[PREF_LABEL] . self::$prefs[1]; // should not occur in lat labels
             $response = RequestResponse::AutocomleteRequest(self::$client, $searchword, "?searchLabel=altLabel");
             if ($response->getStatus() != 200) {
-                $this->failureMessaging($response);
+                Logging::failureMessaging($response , 'autocomplete on word '. $searchword);
             }
             $this->AssertEquals(200, $response->getStatus());
             $json = $response->getBody();
@@ -140,7 +153,7 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
             $returnword = self::$labelMap[ALT_LABEL] . self::$prefs[1]; // altLabel_<someuuid>a.
             $response = RequestResponse::AutocomleteRequest(self::$client, $searchword, "?returnLabel=altLabel");
             if ($response->getStatus() != 200) {
-                $this->failureMessaging($response);
+                Logging::failureMessaging($response , 'autocomplete on word '. $searchword);
             }
             $this->AssertEquals(200, $response->getStatus());
             $json = $response->getBody();
@@ -161,7 +174,7 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
             $word = self::$labelMap[PREF_LABEL] . self::$prefs[1]; // prefLabel<someuuid>a.
             $response = RequestResponse::AutocomleteRequest(self::$client, $word, "?lang=nl");
             if ($response->getStatus() != 200) {
-                $this->failureMessaging($response);
+                Logging::failureMessaging($response , 'autocomplete on word '. $word . "?lang=nl");
             }
             $this->AssertEquals(200, $response->getStatus());
             $json = $response->getBody();
@@ -179,7 +192,7 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
             $word = self::$labelMap[PREF_LABEL] . self::$prefs[1]; // prefLabel<someuuid>a.
             $response = RequestResponse::AutocomleteRequest(self::$client, $word, "?lang=en");
             if ($response->getStatus() != 200) {
-                $this->failureMessaging($response);
+                 Logging::failureMessaging($response , 'autocomplete on word '. $word . "?lang=en (does not exists)");
             }
             $this->AssertEquals(200, $response->getStatus());
             $json = $response->getBody();
@@ -197,7 +210,7 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
             $word = self::$labelMap[PREF_LABEL] . self::$prefs[1]; // prefLabel<someuuid>a.
             $response = RequestResponse::AutocomleteRequest(self::$client, $word, "?format=html");
             if ($response->getStatus() != 200) {
-                $this->failureMessaging($response);
+                Logging::failureMessaging($response , 'autocomplete on word '. $word . "?format=html");
             }
             $this->AssertEquals(200, $response->getStatus());
             // todo: add some chek when it becomes clear how the ourput looks like
@@ -205,12 +218,5 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
             print "\n Cannot perform the test because something is wrong with creating test concepts, see above. \n ";
         }
     }
-   
-    
-    private function failureMessaging($response) {
-        print "\n Failed to create concept, error message: " . $response->getHeader('X-Error-Msg');
-        print "\n Failed to create concept, response message: " . $response->getMessage();
-        print "\n Failed to create concept, response body: " . $response->getBody();
-    }
-
+  
 }
