@@ -2,6 +2,7 @@
 
 class Authenticator {
 
+    // used in import requests because import is sent via the editor
     public static function authenticate() {
         $zendClient = new Zend_Http_Client();
         $zendClient->setCookieJar();
@@ -25,7 +26,7 @@ class Authenticator {
         $zendClient -> setParameterPost('login', 'Login');
         $responseAuth = $zendClient -> request(Zend_Http_Client::POST);
         print "\n Authentication response status: " . $responseAuth -> getStatus();
-        print "\n Authentication response message: " . $responseAuth -> getMessage();
+        print "\n Authentication response message: " . $responseAuth -> getMessage() . "\n";
         return $zendClient;
     }
 }

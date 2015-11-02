@@ -100,6 +100,36 @@ class RequestResponse {
         return $response;
     }
     
+    public static function ExportRequest($client, $conceptId, $fullFileName){
+
+       $url = BASE_URI_ . '/public/editor/concept/export';
+       $host = str_replace("http://", "", BASE_URI_);
+       $currentURLpostParameter = urlencode(BASE_URI . '/public/editor#search/user' . USER_NUMBER . '/concept/' . $conceptId . '/');
+       $client->setUri($url);
+       $client->setConfig(array(
+            'maxredirects' => 2,
+            'timeout' => 30));
+       $client->setHeaders(array(
+            'Accept' => 'text/html,application/xhtml+xml,application/xml',
+                'Content-Type' => 'application/x-www-form-urlencoded',
+            'Accept-Language'=>'en-US,en',
+            'Accept-Encoding'=>'gzip, deflate',
+            'Host' => $host)
+        );
+        
+        $client -> SetParameterPost('fileName', $fullFileName);
+        $client -> SetParameterPost('format', 'xml');
+        $client -> SetParameterPost('maxDepth', 1);
+        $client -> SetParameterPost('exportableFields', "");
+        $client -> SetParameterPost('filedsToExport', "");
+        $client -> SetParameterPost('type', 'concept');
+        $client -> SetParameterPost('additionalData', $conceptId);
+        $client -> SetParameterPost('currentUrl', $currentURLpostParameter);
+        $client -> SetParameterPost('exportButton', 'Export');
+        $response = $client->request('POST');
+        return $response;
+    }
+    
     public static function setNamespaces() {
          $namespaces = array(
             "rdf" => "http://www.w3.org/1999/02/22-rdf-syntax-ns#",

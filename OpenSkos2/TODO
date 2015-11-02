@@ -4,9 +4,7 @@
 
 -- get concepts: setUp --> setUpBeforeClass with static fields
 
--- Autocomplete: see todos comments there
-
--- Recheck import
+-- Import works if use JobManager instead of RespurceManager
 
 -- Export
 
@@ -15,6 +13,8 @@
 -- fetch institutions
 
 -- see what is left from Menzo/Matej's list
+
+-- autocomplete: there are some todo's left, see comments in the code.
 
 
 
