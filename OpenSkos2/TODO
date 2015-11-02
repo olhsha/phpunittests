@@ -4,13 +4,13 @@
 
 -- get concepts: setUp --> setUpBeforeClass with static fields
 
--- Import works if use JobManager instead of RespurceManager
+-- Import works if use JobManager instead of ResourceManager
 
--- Export
+-- Export: fails
 
 -- Fetch collections
 
--- fetch institutions
+-- Fetch institutions
 
 -- see what is left from Menzo/Matej's list
 
