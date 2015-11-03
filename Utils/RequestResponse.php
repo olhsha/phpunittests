@@ -104,7 +104,7 @@ class RequestResponse {
 
        $url = BASE_URI_ . '/public/editor/concept/export';
        $host = str_replace("http://", "", BASE_URI_);
-       $currentURLpostParameter = urlencode(BASE_URI . '/public/editor#search/user' . USER_NUMBER . '/concept/' . $conceptId . '/');
+       $currentURLpostParameter = urlencode(BASE_URI_ . '/public/editor#search/user' . USER_NUMBER . '/concept/' . $conceptId . '/');
        $client->setUri($url);
        $client->setConfig(array(
             'maxredirects' => 2,
@@ -141,6 +141,16 @@ class RequestResponse {
         return $namespaces;
     }
     
+    public static function deleteConcepts($abouts, $client){
+        foreach ($abouts as $about) {
+            if ($about != null) {
+                $response = RequestResponse::DeleteRequest($client, $about);
+                if ($response->getStatus() != 200) {
+                    Logging::failureMessaging($response, 'deleting test concept ' . $about);
+                }
+            }
+        }
+    }
     
 
 }

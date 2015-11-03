@@ -1,10 +1,14 @@
 <?php
 
 require_once dirname(__DIR__) . '/Utils/RequestResponse.php'; 
+require_once dirname(__DIR__) . '/Utils/Logging.php';
 
 class CreateConcept2Test extends PHPUnit_Framework_TestCase {
     
     private $client;
+    
+    // used to collect the id of a created concept so that it can be removed by tearDown after a test method finishes its work
+    private $abouts;
     
     protected function setUp() {
         $this->client = new Zend_Http_Client();
@@ -19,13 +23,16 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
             'Accept-Encoding' => 'gzip, deflate',
             'Connection' => 'keep-alive')
         );
+        
+        $this -> abouts = array();
     }
     
     protected function tearDown() {
-        
+        RequestResponse::deleteConcepts($this->abouts, $this ->client);
+        unset($this->abouts);
     }
-    
-     public function test01CreateConceptWithoutURIWithDateAccepted2() {
+
+    public function test01CreateConceptWithoutURIWithDateAccepted2() {
         //CreateConceptTest::test01CreateConceptWithoutURIWithDateAccepted();
         // Create new concept with dateAccepted filled (implicit status APPROVED). This should not be possible. 
         print "\n\n test01 ... \n";
@@ -43,10 +50,14 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<ns0:terms-dateAccepted>' . $dateAccepted . '</ns0:terms-dateAccepted>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="' . $set .'"/>' .
+                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
         $response = RequestResponse::CreateConceptRequest($this -> client, $xml, "true");
+        if ($response -> getStatus() == 201) {
+            array_push($this -> abouts, $this ->getAbout($response));
+        } 
         $this -> resultMessaging($response);
         $this->AssertEquals(409, $response->getStatus());
     }
@@ -65,14 +76,14 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
                 '<openskos:set rdf:resource="' . $set . '"/>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
+                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
         $response = RequestResponse::CreateConceptRequest($this-> client, $xml, "true");
         $this -> resultMessaging($response);
         $this->AssertEquals(201, $response->getStatus());
-        $namespaces = RequestResponse::setNamespaces();
-        $this->CheckCreatedConcept($response, $namespaces);
+        $this->CheckCreatedConcept($response);
     }
 
    
@@ -91,6 +102,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:notation>' . $notation . '</skos:notation>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="' . $set . '"/>' .
+                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -99,14 +111,16 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
 
         if ($response->getStatus() == 201) {
            print "\n First concept is created \n";
+           array_push($this -> abouts, $this ->getAbout($response));
            $xml2= str_replace ('testPrefLable_', '_another_testPrefLable_', $xml);
            $response2 = RequestResponse::CreateConceptRequest($this->client, $xml2, "false");
+           if ($response2 -> getStatus() == 201) {
+            array_push($this -> abouts, $this ->getAbout($response2));
+           } 
            $this -> resultMessaging($response2);
            $this->AssertEquals(400, $response2->getStatus());
         } else {
-            print "\n Failed to create the first concept: " . $response->getHeader('X-Error-Msg') . "\n";
-            print "\n Failed to create the first concept, message: " . $response->getMessage() . "\n";
-            var_dump($response -> getBody());
+           Logging::failureMessaging($response, 'creating the first concept');
         }
 
        
@@ -126,10 +140,14 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="' . $set . '"/>' .
+                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
         $response = RequestResponse::CreateConceptNoApikeyRequest($this -> client, $xml, "true");
+        if ($response->getStatus() == 201) {
+            array_push($this->abouts, $this->getAbout($response));
+        }
         $this -> resultMessaging($response);
         $this->AssertEquals(412, $response->getStatus());
     }
@@ -150,14 +168,14 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:notation>' . $notation . '</skos:notation>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="' . $set . '"/>' .
+                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
         $response = RequestResponse::CreateConceptRequest($this -> client, $xml, "false");
         $this -> resultMessaging($response);
         $this->AssertEquals(201, $response->getStatus());
-        $namespaces = RequestResponse::setNamespaces();
-        $this->CheckCreatedConcept($response, $namespaces);
+        $this->CheckCreatedConcept($response);
     }
 
     
@@ -175,10 +193,14 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="'. $set . '"/>' .
+                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
         $response = RequestResponse::CreateConceptRequest($this -> client, $xml, "false");
+        if ($response->getStatus() == 201) {
+            array_push($this->abouts, $about);
+        }
         $this -> resultMessaging($response);
         $this->AssertEquals(400, $response->getStatus());
     }
@@ -199,20 +221,23 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:notation>' . $notation . '</skos:notation>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="' . $set . '"/>' .
+                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
         $response0 = RequestResponse::CreateConceptRequest($this -> client, $xml0, "false");
-        if ($response0->isSuccessful()) {
+        if ($response0->getStatus()==201) {
             print "\n First concept is created \n";
+            array_push($this->abouts, $about);
             $xml1 = str_replace('testPrefLable_', '_another_testPrefLable_', $xml0);
             $response1 = RequestResponse::CreateConceptRequest($this -> client, $xml1, "false");
+            if ($response1->getStatus() == 201) {
+                array_push($this->abouts, $about);
+            }
             $this -> resultMessaging($response1);
             $this->AssertEquals(400, $response1->getStatus());
         } else {
-            print "\n Failed to create first concept, message: " . $response0->getHeader('X-Error-Msg') . "\n";
-            print "\n Failed to create first concept, status : " . $response0->getStatus() . "\n";
-            print "\n Failed to create first concept, body : " . $response0->getBody() . "\n";
+            Logging::failureMessaging($response0, 'create first test concept');
         }
     }
 
@@ -229,10 +254,14 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="' . $set . '"/>' .
+                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
         $response = RequestResponse::CreateConceptRequest($this -> client, $wrongXml, "true");
+        if ($response->getStatus() == 201) {
+            array_push($this->abouts, $this->getAbout($response));
+        }
         $this -> resultMessaging($response);
         $this->AssertEquals(400, $response->getStatus());
     }
@@ -252,14 +281,14 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="'. $set . '"/>' .
+                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
         $response = RequestResponse::CreateConceptRequest($this -> client, $xml, "true");
         $this -> resultMessaging($response);
         $this->AssertEquals(201, $response->getStatus());
-        $namespaces = RequestResponse::setNamespaces();
-        $this->CheckCreatedConcept($response, $namespaces);
+        $this->CheckCreatedConcept($response);
     }
 
     
@@ -276,10 +305,14 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="'. $set . '"/>' .
+                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
         $response = RequestResponse::CreateConceptRequest($this -> client, $xml, "false");
+        if ($response->getStatus() == 201) {
+            array_push($this->abouts, $this->getAbout($response));
+        }
         $this -> resultMessaging($response);
         $this->AssertEquals(400, $response->getStatus());
     }
@@ -299,6 +332,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:altLabel xml:lang="nl">' . $altLabel . '</skos:altLabel>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="'. $set . '"/>' .
+                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -307,15 +341,17 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         
         if ($response0->getStatus() == 201) {
             // we can proceed with the test
+            array_push($this->abouts, $this->getAbout($response0));
             $xml = str_replace('testAltLable_', '_another_testAltLable_', $xml0);
             $response = RequestResponse::CreateConceptRequest($this -> client, $xml, "true");
+            if ($response->getStatus() == 201) {
+                array_push($this->abouts, $this->getAbout($response));
+            }
             $this -> resultMessaging($response);
             $this->AssertEquals(400, $response->getStatus());
         } else {
             print "ERROR while creating the first test concept, cannot proceed woth the test! ";
-            print "\n Failed to create first concept, message: " . $response0->getHeader('X-Error-Msg') . "\n";
-            print "\n Failed to create first concept, status : " . $response0->getStatus() . "\n";
-            print "\n Failed to create first concept, body : " . $response0->getBody() . "\n";
+            Logging::failureMessaging($response0, 'create the first test concept');
         }
     }
 
@@ -334,10 +370,14 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                  '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="'. $set . '"/>' . 
                 '<skos:notation>' . $notation .  '</skos:notation>' .
+                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
         $response = RequestResponse::CreateConceptRequest($this -> client, $xml, "true");
+        if ($response->getStatus() == 201) {
+            array_push($this->abouts, $this->getAbout($response));
+        }
         $this -> resultMessaging($response);
         $this->AssertEquals(400, $response->getStatus());
     }
@@ -355,17 +395,23 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
                  '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="'. $set . '"/>'  .
+                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
         $response = RequestResponse::CreateConceptRequest($this -> client, $xml, "false");
+        if ($response->getStatus() == 201) {
+            array_push($this->abouts, $this->getAbout($response));
+        }
         $this -> resultMessaging($response);
         $this->AssertEquals(400, $response->getStatus());
     }
 
-    private function CheckCreatedConcept($response, $namespaces) {
+    // this method also retrieves rdf:about element which is used in tearDown method to remove created concept after the method is done.
+    private function CheckCreatedConcept($response) {
         $dom = new Zend_Dom_Query();
         $dom->setDocumentXML($response->getBody());
+        $namespaces = RequestResponse::setNamespaces();
         $dom->registerXpathNamespaces($namespaces);
 
         $elem = $dom->queryXpath('/rdf:RDF');
@@ -373,22 +419,38 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
 
         $description = $dom->queryXpath('/rdf:RDF/rdf:Description'); 
         $this->assertEquals(1, $description->count(), "rdf:Description element is not declared");
+        
         $resURI = $description->current()->getAttribute("rdf:about");
-        $this->assertNotEquals("", $resURI, "No valid uri for SKOS concept");
+        $this->assertNotEquals(null, $resURI, "No valid uri for SKOS concept (null value)");
+        $this->assertNotEquals("", $resURI, "No valid uri for SKOS concept (empty-string value)");
+        array_push($this -> abouts, $resURI);
+        
         $status = $dom->queryXpath('/rdf:RDF/skos:Concept/openskos:status');
         $this->assertEquals(1, $status->count(), "No openkos:status element. ");
         $this->assertEquals("Candidate", $status->current()->nodeValue, "Satus is not Candidate, as it must be by just created concept.");
         print "\n New concept is created with URI $resURI  and status" . $status->current()->nodeValue;
     }
      
+    private function getAbout($response){
+        $dom = new Zend_Dom_Query();
+        $namespaces = RequestResponse::setNamespaces();
+        $dom->setDocumentXML($response->getBody());
+        $dom->registerXpathNamespaces($namespaces);
+
+        $description = $dom->queryXpath('/rdf:RDF/rdf:Description'); 
+        $this->assertEquals(1, $description->count(), "rdf:Description element is not declared");
+        
+        $resURI = $description->current()->getAttribute("rdf:about");
+        $this->assertNotEquals("", $resURI, "No valid uri for SKOS concept");
+        return $resURI;
+    }
+            
     private function resultMessaging($response) {
         if ($response -> getStatus() == 201) {
             print "\n Hosanna: a concept is created! \n";
             print "\n HTTPResponseHeader-Location: " . $response->getHeader('Location') . "\n";
         } else {
-            print "\n Failed to create concept, error message: " . $response->getHeader('X-Error-Msg');
-            print "\n Failed to create concept, response message: " . $response->getMessage();
-            print "\n Failed to create concept, response body: " . $response->getBody();
+           Logging::failureMessaging($response, 'create concept');
         }
     }
 

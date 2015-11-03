@@ -79,13 +79,7 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
     
     // delete all created concepts
     public static function tearDownAfterClass() {
-        parent::tearDownAfterClass();
-        foreach(self::$abouts as $about) {
-           $response= RequestResponse::DeleteRequest(self::$client, $about);
-           if ($response -> getStatus() != 200) {
-               Logging::failureMessaging($response, 'deleting test concept ' . $about);
-           }
-        }
+        RequestResponse::deleteConcepts(self::$abouts, self::$client);
     }
     
     public function testAutocompleteInLoopNoParams() {
@@ -132,7 +126,7 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
     public function testAutocompleteSearchAltLabelWithNoOccurences() {
         print "\n testAutocomplete search alt Label";
         if (self::$success) {
-            $searchword = self::$labelMap[PREF_LABEL] . self::$prefs[1]; // should not occur in lat labels
+            $searchword = self::$labelMap[PREF_LABEL] . self::$prefs[1]; // should not occur in alt labels
             $response = RequestResponse::AutocomleteRequest(self::$client, $searchword, "?searchLabel=altLabel");
             if ($response->getStatus() != 200) {
                 Logging::failureMessaging($response , 'autocomplete on word '. $searchword);

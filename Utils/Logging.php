@@ -13,7 +13,7 @@ class Logging {
     public static function failureMessaging($response, $action) {
         print "\n Failed to " . $action . ", response header: " . $response->getHeader('X-Error-Msg');
         print "\n Failed to " . $action . ", response message: " . $response->getMessage();
-        print "\n Failed to " . $action . ", responce message: " . $response->getBody();
+        print "\n Failed to " . $action . ", responce body: " . $response->getBody();
     }
 }
 

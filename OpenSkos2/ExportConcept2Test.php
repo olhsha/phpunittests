@@ -14,6 +14,8 @@ class ExportConcept2Test extends PHPUnit_Framework_TestCase {
     private static $about;
     private static $notation;
     private static $response0;
+    
+    private static $abouts;
 
     public static function setUpBeforeClass() {
         
@@ -43,18 +45,26 @@ class ExportConcept2Test extends PHPUnit_Framework_TestCase {
 
 
         self::$response0 = RequestResponse::CreateConceptRequest(self::$client, $xml, "false");
-        var_dump(self::$response0->getBody());
+        //var_dump(self::$response0->getBody());
         print "\n Creation status: " . self::$response0->getStatus() . "\n";
+    }
+    
+     public static function tearDownAfterClass() {
+         if (self::$about != null) {
+            RequestResponse::DeleteRequest(self::$client, self::$about);
+        } else {
+            print "\n Nothing to clean up after testing: the rdf-about is null \n";
+        }
     }
 
     public function testExport() {
         if (self::$response0->getStatus() == 201) {
-            $response = RequestResponse::DeleteRequest(self::$client, self::$about);
+            $response = RequestResponse::ExportRequest(self::$client, self::$uuid, dirname(__DIR__) . '/OpenSkos2/ExportTest.xml');
             if ($response->getStatus() != 200) {
                 Logging::failureMessaging($response, "export concept");
-                $this -> assertions($response);
             }
             $this->AssertEquals(200, $response->getStatus());
+            $this -> assertions($response);
         } else {
             Logging::failureMessaging(self::$response0, "create test concept");
         }
