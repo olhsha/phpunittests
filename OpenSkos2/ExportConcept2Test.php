@@ -15,8 +15,6 @@ class ExportConcept2Test extends PHPUnit_Framework_TestCase {
     private static $notation;
     private static $response0;
     
-    private static $abouts;
-
     public static function setUpBeforeClass() {
         
         self::$client = Authenticator::authenticate();
