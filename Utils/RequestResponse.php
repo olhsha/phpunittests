@@ -152,5 +152,35 @@ class RequestResponse {
         }
     }
     
+    public static function jsonP_decode_parameters($input, $callbackName){
+        $inputTrimmed = trim($input);
+        $errorMessage = "The input value \n". $input. "\n is not a valid jsonp value. \n";
+        $begin = strpos($inputTrimmed, $callbackName . '(');
+        if ($begin != 0) {
+            if (!$begin) {
+                print $errorMessage;
+                print "\n Reason: it does not contain <callbackname>( \n";
+                return null;
+            }
+            print $errorMessage;
+            print "\n Reason: it does not start with <callbackname>( \n";
+            return null;
+        }
+        $end = strrpos($inputTrimmed, ");");
+        if ($end != strlen($inputTrimmed) - 2) {
+            if (!$end) {
+                print $errorMessage;
+                print "\n Reason: it does not contain ); \n";
+                return null;
+            }
+            print $errorMessage;
+            print "\n Reason: it does not end with ); \n";
+            return null;
+        }
+        $length = strlen($inputTrimmed) - (strlen($callbackName)+1) -2; // the input string should start with <callbackname( and end with );
+        $parameters = substr($inputTrimmed, strlen($callbackName)+1, $length);
+        return json_decode($parameters, true);
+    }
+    
 
 }

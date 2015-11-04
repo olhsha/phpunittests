@@ -87,14 +87,11 @@ class GetCollections2Test extends PHPUnit_Framework_TestCase {
     
     public function testCollectionJsonP() {
         print "\n Test: get a collection in jsonp ... ";
-        $response = RequestResponse::GetCollection(self::$client, BASE_URI_ . '/public/api/collections/' . COLLECTION_1_tenant . ":" . COLLECTION_1_code. '.jsonp?callback=my_callback1234', 'application/json');
+        $response = RequestResponse::GetCollection(self::$client, BASE_URI_ . '/public/api/collections/' . COLLECTION_1_tenant . ":" . COLLECTION_1_code. '.jsonp?callback=' . CALLBACK_NAME, 'application/json');
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $json = $response->getBody();
-        var_dump($json);
-        $collections = json_decode($json, true);
-        $collection = json_decode($json, true);
-        var_dump($collection);
-        $this->assertionsJsonPCollection($collection, 0);
+        $collection = RequestResponse::jsonP_decode_parameters($json, CALLBACK_NAME);
+        $this->assertionsJsonCollection($collection, 0);
     }
 
     ////////////////////////////////////
@@ -124,9 +121,7 @@ class GetCollections2Test extends PHPUnit_Framework_TestCase {
         }
     }
     
-     private function assertionsJsonPCollection($response, $i) {
-        
-    }
+    
     
     private function assertionsJsonPCollections($response) {
         $this -> assertionsJsonCollections($response);
