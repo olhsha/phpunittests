@@ -357,18 +357,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->AssertEquals(BASE_URI_ . CONCEPT_collection, $results8->current()->getAttribute('rdf:resource'));
     }
 
-    private function getByIndex($list, $index) {
-        if ($index < 0 || $index >= count($list)) {
-            return null;
-        }
-        $list->rewind();
-        $i = 0;
-        while ($i < $index) {
-            $list->next();
-            $i++;
-        }
-        return $list->current();
-    }
+    
 
     private function assertionsForHTMLConcept($response, $prefLabel, $altLabel, $hiddenLabel, $lang, $definition, $notation, $topConceptOf, $inScheme) {
         $dom = new Zend_Dom_Query();
@@ -376,32 +365,31 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
 
         //does not work because of . : $results1 = $dom->query('dl > dd  > a[href="http://hdl.handle.net/11148/CCR_C-4046_944cc750-1c29-ccf0-fb68-4d00385d7b42"]');
         $resultsUri1 = $dom->query('dl > dt');
-
-        $propertyName = $this->getByIndex($resultsUri1, 2)->nodeValue;
+        $propertyName = RequestResponse::getByIndex($resultsUri1, 2)->nodeValue;
         $this->AssertEquals("SKOS Class:", $propertyName);
 
         $resultsUri2 = $dom->query('dl > dd > a');
-        $property = $this->getByIndex($resultsUri2, 2);
+        $property = RequestResponse::getByIndex($resultsUri2, 2);
         $this->AssertEquals("http://www.w3.org/2004/02/skos/core#Concept", $property->nodeValue);
         $this->AssertEquals("http://www.w3.org/2004/02/skos/core#Concept", $property->getAttribute('href'));
 
         $h3s = $dom->query('h3');
-        $inSchemeName = $this->getByIndex($h3s, 0)->nodeValue;
+        $inSchemeName = RequestResponse::getByIndex($h3s, 0)->nodeValue;
         $this->AssertEquals("inScheme", $inSchemeName);
 
-        $lexLabels = $this->getByIndex($h3s, 2)->nodeValue;
+        $lexLabels = RequestResponse::getByIndex($h3s, 2)->nodeValue;
         $this->AssertEquals("LexicalLabels", $lexLabels);
 
         $h4s = $dom->query('h4');
-        $altLabelName = $this->getByIndex($h4s, 2)->nodeValue;
+        $altLabelName = RequestResponse::getByIndex($h4s, 2)->nodeValue;
         $this->AssertEquals("skos:http://www.w3.org/2004/02/skos/core#altLabel", $altLabelName);
-        $prefLabelName = $this->getByIndex($h4s, 4)->nodeValue;
+        $prefLabelName = RequestResponse::getByIndex($h4s, 4)->nodeValue;
         $this->AssertEquals("skos:http://www.w3.org/2004/02/skos/core#prefLabel", $prefLabelName);
-        $notationName = $this->getByIndex($h4s, 5)->nodeValue;
+        $notationName = RequestResponse::getByIndex($h4s, 5)->nodeValue;
         $this->AssertEquals("skos:http://www.w3.org/2004/02/skos/core#notation", $notationName);
 
         $list = $dom->query('ul > li > a > span');
-        $prefLabelVal = $this->getByIndex($list, 4)->nodeValue;
+        $prefLabelVal = RequestResponse::getByIndex($list, 4)->nodeValue;
         $this->AssertEquals($prefLabel, $prefLabelVal);
     }
 

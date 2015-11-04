@@ -40,7 +40,7 @@ class RequestResponse {
         return $response;
     }
     
-    public static function GetCollection($client, $requestString, $contentType) {
+    public static function GetCollectionOrInstitution($client, $requestString, $contentType) {
         $client->setUri($requestString);
         $client->setConfig(array(
             'maxredirects' => 0,
@@ -182,5 +182,17 @@ class RequestResponse {
         return json_decode($parameters, true);
     }
     
+    public static function getByIndex($list, $index) {
+        if ($index < 0 || $index >= count($list)) {
+            return null;
+        }
+        $list->rewind();
+        $i = 0;
+        while ($i < $index) {
+            $list->next();
+            $i++;
+        }
+        return $list->current();
+    }
 
 }

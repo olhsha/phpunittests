@@ -1,6 +1,5 @@
 <?php
 
-require_once dirname(__DIR__) . '/Utils/Authenticator.php';
 require_once dirname(__DIR__) . '/Utils/RequestResponse.php'; 
 
 class GetCollections2Test extends PHPUnit_Framework_TestCase {
@@ -25,14 +24,14 @@ class GetCollections2Test extends PHPUnit_Framework_TestCase {
     
     public function testAllCollections() {
         print "\n Test: get all collections in default format ... ";
-        $response = RequestResponse::GetCollection(self::$client, BASE_URI_ . '/public/api/collections', 'text/xml');
+        $response = RequestResponse::GetCollectionOrInstitution(self::$client, BASE_URI_ . '/public/api/collections', 'text/xml');
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsXMLRDFCollections($response);
     }
     
     public function testAllCollectionsJson() {
         print "\n Test: get all collections in json ... ";
-        $response = RequestResponse::GetCollection(self::$client, BASE_URI_ . '/public/api/collections?format=json', 'application/json');
+        $response = RequestResponse::GetCollectionOrInstitution(self::$client, BASE_URI_ . '/public/api/collections?format=json', 'application/json');
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsJsonCollections($response);
     }
@@ -41,14 +40,14 @@ class GetCollections2Test extends PHPUnit_Framework_TestCase {
     
     public function testAllCollectionsJsonP() {
         print "\n Test: get all collections in jsonp ... ";
-        $response = RequestResponse::GetCollection(self::$client, BASE_URI_ . '/public/api/collections?format=jsonp$callback=my_callback1234', 'application/json');
+        $response = RequestResponse::GetCollectionOrInstitution(self::$client, BASE_URI_ . '/public/api/collections?format=jsonp$callback='.CALLBACK_NAME, 'application/json');
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsJsonPCollections($response);
     }
 
     public function testAllCollectionsOAIYesJson() {
         print "\n Test: get all collections in json, allow oai ... ";
-        $response = RequestResponse::GetCollection(self::$client, BASE_URI_ . '/public/api/collections?allow_oai=y&format=json', 'application/json'); 
+        $response = RequestResponse::GetCollectionOrInstitution(self::$client, BASE_URI_ . '/public/api/collections?allow_oai=y&format=json', 'application/json'); 
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
        
        // empty result
@@ -60,14 +59,14 @@ class GetCollections2Test extends PHPUnit_Framework_TestCase {
     
     public function testCollectionsRDFXML() {
         print "\n Test: get all collections rdf/xml explicit... ";
-        $response = RequestResponse::GetCollection(self::$client, BASE_URI_ . '/public/api/collections/' . COLLECTION_1_tenant . ":" . COLLECTION_1_code . '.rdf', 'text/xml');
+        $response = RequestResponse::GetCollectionOrInstitution(self::$client, BASE_URI_ . '/public/api/collections/' . COLLECTION_1_tenant . ":" . COLLECTION_1_code . '.rdf', 'text/xml');
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsXMLRDFCollections($response);
     }
     
     public function testCollection() {
         print "\n Test: get a collection in default format ... ";
-        $response = RequestResponse::GetCollection(self::$client, BASE_URI_ . '/public/api/collections/' . COLLECTION_1_tenant . ":" . COLLECTION_1_code, 'text/xml');
+        $response = RequestResponse::GetCollectionOrInstitution(self::$client, BASE_URI_ . '/public/api/collections/' . COLLECTION_1_tenant . ":" . COLLECTION_1_code, 'text/xml');
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $dom = new Zend_Dom_Query();
         $dom->setDocumentXML($response->getBody());
@@ -77,7 +76,7 @@ class GetCollections2Test extends PHPUnit_Framework_TestCase {
     
     public function testCollectionJson() {
         print "\n Test: get a collection in json ... ";
-        $response = RequestResponse::GetCollection(self::$client, BASE_URI_ . '/public/api/collections/' . COLLECTION_1_tenant . ":" . COLLECTION_1_code. '.json', 'application/json');
+        $response = RequestResponse::GetCollectionOrInstitution(self::$client, BASE_URI_ . '/public/api/collections/' . COLLECTION_1_tenant . ":" . COLLECTION_1_code. '.json', 'application/json');
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $json = $response->getBody();
         $collection = json_decode($json, true);
@@ -87,7 +86,7 @@ class GetCollections2Test extends PHPUnit_Framework_TestCase {
     
     public function testCollectionJsonP() {
         print "\n Test: get a collection in jsonp ... ";
-        $response = RequestResponse::GetCollection(self::$client, BASE_URI_ . '/public/api/collections/' . COLLECTION_1_tenant . ":" . COLLECTION_1_code. '.jsonp?callback=' . CALLBACK_NAME, 'application/json');
+        $response = RequestResponse::GetCollectionOrInstitution(self::$client, BASE_URI_ . '/public/api/collections/' . COLLECTION_1_tenant . ":" . COLLECTION_1_code. '.jsonp?callback=' . CALLBACK_NAME, 'application/json');
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $json = $response->getBody();
         $collection = RequestResponse::jsonP_decode_parameters($json, CALLBACK_NAME);
@@ -107,6 +106,8 @@ class GetCollections2Test extends PHPUnit_Framework_TestCase {
             $this->assertEquals(COLLECTION_1_oaibaseurl, $collection["OAI_baseURL"]);
             $this->assertEquals(COLLECTION_1_allowoai, $collection["allow_oai"]);
             $this->assertEquals(COLLECTION_1_conceptsbaseurl, $collection["conceptsBaseUrl"]);
+        } else {
+            $this->AssertEquals(1, 0);
         }
     }
     
@@ -140,7 +141,7 @@ class GetCollections2Test extends PHPUnit_Framework_TestCase {
             $this->AssertEquals(COLLECTION_1_creator, $results4 -> current()->nodeValue);
             $this->AssertEquals(BASE_URI_ . COLLECTION_1_creator_about_suffix, $results4->current()->getAttribute('rdf:about'));
         } else {
-            // collection 2, next()
+            $this->AssertEquals(1, 0);
         }
     }
    

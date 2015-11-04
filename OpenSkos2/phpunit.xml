@@ -42,8 +42,14 @@
        <const name="COLLECTION_1_creator_about_suffix" value ="/api/institution/mi"/>
        <const name="CALLBACK_NAME" value ="my_Callback1234"/>
        
-       <!-- <const name="CREATOR" value="http://server/unset-base/meertens.knaw.nl-importtest"/> -->
        <const name="CREATOR" value="tester"/>
+       
+              <!-- test institution(s) -->
+       <const name="NUMBER_INSTITUTIONS" value="1"/>
+       <const name="INSTITUTION_CODE" value="mi"/>
+       <const name="INSTITUTION_NAME" value="meertens"/>
+       <const name="INSTITUTION_URI" value="/api/institution"/>
+       <const name="INSTITUTION_MAIL" value="info@meertens.knaw.nl"/>
     </php>
 </phpunit>
 
