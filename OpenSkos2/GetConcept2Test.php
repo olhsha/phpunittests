@@ -63,10 +63,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
         self::$client->setUri(BASE_URI_ . '/public/api/find-concepts?q=prefLabel:' . self::$prefLabel);
         $response = self::$client->request(Zend_Http_Client::GET);
-        if ($response->getStatus() != 200) {
-            print "\n " . $response->getMessage();
-        }
-        $this->AssertEquals(200, $response->getStatus());
+        $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsForXMLRDFConcept($response, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
     }
 
@@ -76,10 +73,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         // we can now perform the get-test
         self::$client->setUri(BASE_URI_ . '/public/api/find-concepts?q=' . self::$prefLabel);
         $response = self::$client->request(Zend_Http_Client::GET);
-        if ($response->getStatus() != 200) {
-            print "\n " . $response->getMessage();
-        }
-        $this->AssertEquals(200, $response->getStatus());
+        $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
     }
 
     public function testViaAltLabelImplicit2() {
@@ -88,10 +82,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         // we can now perform the get-test
         self::$client->setUri(BASE_URI_ . '/public/api/find-concepts?q=' . self::$altLabel);
         $response = self::$client->request(Zend_Http_Client::GET);
-        if ($response->getStatus() != 200) {
-            print "\n " . $response->getMessage();
-        }
-        $this->AssertEquals(200, $response->getStatus());
+        $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsForXMLRDFConcept($response, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
     }
 
@@ -101,10 +92,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         // we can now perform the get-test
         self::$client->setUri(BASE_URI_ . '/public/api/find-concepts?q=' . self::$hiddenLabel);
         $response = self::$client->request(Zend_Http_Client::GET);
-        if ($response->getStatus() != 200) {
-            print "\n " . $response->getMessage();
-        }
-        $this->AssertEquals(200, $response->getStatus());
+        $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsForXMLRDFConcept($response, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
     }
@@ -115,10 +103,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         // we can now perform the get-test
         self::$client->setUri(BASE_URI_ . '/public/api/find-concepts?q=prefLabel:testPrefLable*');
         $response = self::$client->request(Zend_Http_Client::GET);
-        if ($response->getStatus() != 200) {
-            print "\n " . $response->getMessage();
-        }
-        $this->AssertEquals(200, $response->getStatus());
+        $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsForManyConcepts($response);
     }
 
@@ -128,10 +113,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         // we can now perform the get-test
         self::$client->setUri(BASE_URI_ . '/public/api/find-concepts?q=prefLabel:testPrefLable*&rows=1');
         $response = self::$client->request(Zend_Http_Client::GET);
-        if ($response->getStatus() != 200) {
-            print "\n " . $response->getMessage();
-        }
-        $this->AssertEquals(200, $response->getStatus());
+        $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsForManyConceptsRows($response, 1);
     }
 
@@ -141,10 +123,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         // we can now perform the get-test
         self::$client->setUri(BASE_URI_ . '/public/api/find-concepts?q=prefLabel:testPrefLable*&rows=2');
         $response = self::$client->request(Zend_Http_Client::GET);
-        if ($response->getStatus() != 200) {
-            print "\n " . $response->getMessage();
-        }
-        $this->AssertEquals(200, $response->getStatus());
+        $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsForManyConceptsRows($response, 2);
     }
 
@@ -154,10 +133,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         // we can now perform the get-test
         self::$client->setUri(BASE_URI_ . '/public/api/find-concepts?q=prefLabel@nl:' . self::$prefLabel);
         $response = self::$client->request(Zend_Http_Client::GET);
-        if ($response->getStatus() != 200) {
-            print "\n " . $response->getMessage();
-        }
-        $this->AssertEquals(200, $response->getStatus());
+        $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsForXMLRDFConcept($response, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
     }
 
@@ -167,10 +143,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         // we can now perform the get-test
         self::$client->setUri(BASE_URI_ . '/public/api/find-concepts?q=prefLabel@en:' . self::$prefLabel);
         $response = self::$client->request(Zend_Http_Client::GET);
-        if ($response->getStatus() != 200) {
-            print "\n " . $response->getMessage();
-        }
-        $this->AssertEquals(200, $response->getStatus());
+        $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsForManyConceptsZeroResults($response);
     }
 
@@ -193,10 +166,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         // we can now perform the get-test
         self::$client->setUri(BASE_URI_ . '/public/api/concept/?id=' . self::$about);
         $response = self::$client->request(Zend_Http_Client::GET);
-        if ($response->getStatus() != 200) {
-            print "\n " . $response->getMessage();
-        }
-        $this->AssertEquals(200, $response->getStatus());
+        $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsForXMLRDFConcept($response, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
     }
 
@@ -206,10 +176,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         // we can now perform the get-test
         self::$client->setUri(BASE_URI_ . '/public/api/concept/' . self::$uuid);
         $response = self::$client->request(Zend_Http_Client::GET);
-        if ($response->getStatus() != 200) {
-            print "\n " . $response->getMessage();
-        }
-        $this->AssertEquals(200, $response->getStatus());
+        $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsForXMLRDFConcept($response, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
     }
 
@@ -219,10 +186,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         // we can now perform the get-test
         self::$client->setUri(BASE_URI_ . '/public/api/concept/' . self::$uuid . '.rdf');
         $response = self::$client->request(Zend_Http_Client::GET);
-        if ($response->getStatus() != 200) {
-            print "\n " . $response->getMessage();
-        }
-        $this->AssertEquals(200, $response->getStatus());
+        $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsForXMLRDFConcept($response, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
     }
 
@@ -232,11 +196,28 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         // we can now perform the get-test
         self::$client->setUri(BASE_URI_ . '/public/api/concept/' . self::$uuid . '.html');
         $response = self::$client->request(Zend_Http_Client::GET);
-        if ($response->getStatus() != 200) {
-            print "\n " . $response->getMessage();
-        }
-        $this->AssertEquals(200, $response->getStatus());
+        $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsForHtmlConcept($response, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
+    }
+    
+    public function testViaHandleHtml() {
+        print "\n" . "Test: get concept-html via its id. ";
+        $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
+        // we can now perform the get-test
+        self::$client->setUri(BASE_URI_ . '/public/api/find-concepts?id=' . self::$about . '&format=html');
+        $response = self::$client->request(Zend_Http_Client::GET);
+        $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
+        $this->assertionsForHtmlConcept($response, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
+    }
+    
+    public function testViaHandleJsonFiltered() {
+        print "\n" . "Test: get concept-json with filtered fields via it handle ";
+        $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
+        // we can now perform the get-test
+        self::$client->setUri(BASE_URI_ . '/public/api/find-concepts?id=' . self::$about . '&format=json&fl=uuid,uri,prefLabel');
+        $response = self::$client->request(Zend_Http_Client::GET);
+        $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
+        $this->assertionsForJsonConceptFiltered($response, self::$uuid, self::$prefLabel);
     }
 
     public function testViaIdJson() {
@@ -245,10 +226,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         // we can now perform the get-test
         self::$client->setUri(BASE_URI_ . '/public/api/concept/' . self::$uuid . '.json');
         $response = self::$client->request(Zend_Http_Client::GET);
-        if ($response->getStatus() != 200) {
-            print "\n " . $response->getMessage();
-        }
-        $this->AssertEquals(200, $response->getStatus());
+        $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsForJsonConcept($response, self::$uuid, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
     }
 
@@ -258,10 +236,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         // we can now perform the get-test
         self::$client->setUri(BASE_URI_ . '/public/api/concept/' . self::$uuid . '.jsonp&callback=test');
         $response = self::$client->request(Zend_Http_Client::GET);
-        if ($response->getStatus() != 200) {
-            print "\n " . $response->getMessage();
-        }
-        $this->AssertEquals(200, $response->getStatus());
+        $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsForJsonPConcept($response, self::$uuid, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
     }
 
@@ -395,10 +370,19 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
 
     private function assertionsForJsonConcept($response, $uuid, $prefLabel, $altLabel, $hiddenLabel, $lang, $definition, $notation, $topConceptOf, $inScheme) {
         $json = $response->getBody();
-        $arrays = json_decode($json, true);
-        $this->assertEquals($uuid, $arrays["uuid"]);
-        $this->assertEquals($altLabel, $arrays["altLabel@nl"][0]);
-        $this->assertEquals($prefLabel, $arrays["prefLabel@nl"]);
+        $array = json_decode($json, true);
+        $this->assertEquals($uuid, $array["uuid"]);
+        $this->assertEquals($altLabel, $array["altLabel@nl"][0]);
+        $this->assertEquals($prefLabel, $array["prefLabel@nl"]);
+        return $json;
+    }
+    
+    private function assertionsForJsonConceptFiltered($response, $uuid, $prefLabel) {
+        $json = $response->getBody();
+        $array = json_decode($json, true);
+        $this -> assertEquals(3, count($array));
+        $this->assertEquals($uuid, $array["uuid"]);
+        $this->assertEquals($prefLabel, $array["prefLabel@nl"]);
         return $json;
     }
 

@@ -41,7 +41,9 @@
        <const name="COLLECTION_1_creator" value ="meertens"/>
        <const name="COLLECTION_1_creator_about_suffix" value ="/api/institution/mi"/>
        <const name="CALLBACK_NAME" value ="my_Callback1234"/>
-       
+       <const name="NUMBER_SCHEMATA" value="2"/>
+       <const name="SCHEMA_1" value="http://data.beeldengeluid.nl/gtaa/test1/testschema1"/>
+       <const name="SCHEMA_2" value="http://data.beeldengeluid.nl/gtaa/test2/testschema2"/>
        <const name="CREATOR" value="tester"/>
        
               <!-- test institution(s) -->

@@ -57,11 +57,18 @@ class GetCollections2Test extends PHPUnit_Framework_TestCase {
         $this -> assertEquals(0, count($arrays["collections"]));
     } 
     
-    public function testCollectionsRDFXML() {
+    public function testAllCollectionsRDFXML() {
         print "\n Test: get all collections rdf/xml explicit... ";
-        $response = RequestResponse::GetCollectionOrInstitution(self::$client, BASE_URI_ . '/public/api/collections/' . COLLECTION_1_tenant . ":" . COLLECTION_1_code . '.rdf', 'text/xml');
+        $response = RequestResponse::GetCollectionOrInstitution(self::$client, BASE_URI_ . '/public/api/collections?format=rdf', 'text/xml');
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsXMLRDFCollections($response);
+    }
+    
+     public function testAllCollectionsHTML() {
+        print "\n Test: get all collections html... ";
+        $response = RequestResponse::GetCollectionOrInstitution(self::$client, BASE_URI_ . '/public/api/collections?fromat=html', 'text/html');
+        $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
+        $this->assertionsHTMLAllCollections($response);
     }
     
     public function testCollection() {
@@ -93,6 +100,14 @@ class GetCollections2Test extends PHPUnit_Framework_TestCase {
         $this->assertionsJsonCollection($collection, 0);
     }
 
+    public function testCollectionHTML() {
+        print "\n Test: get a collection in jsonp ... ";
+        $response = RequestResponse::GetCollectionOrInstitution(self::$client, BASE_URI_ . '/public/api/collections/' . COLLECTION_1_tenant . ":" . COLLECTION_1_code. '.html', 'text/html');
+        $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
+        $dom = new Zend_Dom_Query();
+        $dom->setDocumentHTML($response->getBody());
+        $this->assertionsHTMLCollection($dom, 0);
+    }
     ////////////////////////////////////
     private function assertionsJsonCollection($collection, $i) {
         if ($i == 0) {
@@ -153,6 +168,23 @@ class GetCollections2Test extends PHPUnit_Framework_TestCase {
         for($i=0; $i<NUMBER_COLLECTIONS; $i++){
             $this -> assertionsXMLRDFCollection($dom, $i);
         }
+    }
+    
+    private function assertionsHTMLCollection(Zend_Dom_Query $dom, $i) {
+        $institution = $dom->query('dl > dd > a');
+        $schemata = $dom->query('ul > li > a'); // also grabs 3 items for formats
+        if ($i == 0) {
+            $this->AssertEquals(NUMBER_INSTITUTIONS, count($institution));
+            $title = RequestResponse::getByIndex($institution, 0)->nodeValue;
+            $this->AssertEquals(INSTITUTION_NAME, $title);
+            $this->AssertEquals(NUMBER_SCHEMATA, count($schemata)-3);
+        }
+    }
+    
+    private function assertionsHTMLAllCollections($response) {
+        // fill in the test when it is clear what should be there
+        // at the mment this service does not work anywhere
+        $this -> AssertEquals(1, 0);
     }
     
 }
