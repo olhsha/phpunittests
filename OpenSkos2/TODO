@@ -3,10 +3,13 @@
 
 -- Get concepts: add tests for rows and start
 
+-- oai-tests
+
+Problems that cannot be solved be me alone right now.
+
 -- autocomplete: there is no full test with format=html, because the service works nowhere and I do not know how
 the output must looks like. This is a problem from Menzo-Matej list and described as an edition to issue https://code.pictura-dp.nl/issues/23865
 
-Problems that cannot be solved right now.
 
 -- Import works if use my special JobManager instead of its paent-class ResourceManager
 
