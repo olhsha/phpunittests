@@ -77,6 +77,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<openskos:set rdf:resource="' . $set . '"/>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<openskos:uuid>892276e6-2db0-4351-8e0b-1094cf6106cd</openskos:uuid>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 

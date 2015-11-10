@@ -23,6 +23,8 @@ class RequestResponse {
         return $response;
     }
     
+    
+    
     public static function CreateConceptNoApikeyRequest($client, $xml, $autoGenerateIdentifiers) {
         $client->setUri(BASE_URI_ . "/public/api/concept?");
         $client->setConfig(array(
@@ -35,6 +37,67 @@ class RequestResponse {
                 ->setParameterGet('tenant', TENANT)
                 ->setParameterGet('collection', COLLECTION_1_code)
                 ->setParameterGet('autoGenerateIdentifiers', $autoGenerateIdentifiers)
+                ->request('POST');
+
+        return $response;
+    }
+    
+    public static function CreateRelationMultipartFormRequest($client, $body, $boundary) {
+        $client->setUri(BASE_URI_ . "/public/api/relation");
+        $client->setConfig(array(
+            'maxredirects' => 2,
+            'timeout' => 30));
+         $client->SetHeaders(array(
+            'Accept' => 'text/html,application/xhtml+xml,application/xml',
+            'Content-Type' => 'multipart/form-data; boundary='.$boundary,
+            'Accept-Language' => 'nl,en-US,en',
+            'Accept-Encoding' => 'gzip, deflate',
+            'Connection' => 'keep-alive')
+        );
+        $response = $client
+                ->setRawData($body)
+                ->request('POST');
+
+        return $response;
+    }
+    
+    public static function CreateRelationUrlEncodedRequest($client, $body) {
+        $client->setUri(BASE_URI_ . "/public/api/relation");
+        $client->setConfig(array(
+            'maxredirects' => 2,
+            'timeout' => 30));
+         $client->SetHeaders(array(
+            'Accept' => 'text/html,application/xhtml+xml,application/xml',
+            'Content-Type' => 'application/x-www-form-urlencoded',
+            'Accept-Language' => 'nl,en-US,en',
+            'Accept-Encoding' => 'gzip, deflate',
+            'Connection' => 'keep-alive')
+        );
+        $response = $client
+                ->setRawData($body)
+                ->request('POST');
+
+        return $response;
+    }
+    
+    public static function CreateRelationViaParametersRequest($client, $aboutX, $relation, $aboutY) {
+        $client->setUri(BASE_URI_ . "/public/api/relation");
+        $client->setConfig(array(
+            'maxredirects' => 2,
+            'timeout' => 30));
+        $client->SetHeaders(array(
+            'Accept' => 'text/html,application/xhtml+xml,application/xml',
+            'Content-Type' => 'text/plain',
+            'Accept-Language' => 'nl,en-US,en',
+            'Accept-Encoding' => 'gzip, deflate',
+            'Connection' => 'keep-alive')
+        );
+        $response = $client
+                ->setParameterGet('content', $aboutX)
+                ->setParameterGet('type', $relation)
+                ->setParameterGet('related', $aboutY)
+                ->setParameterGet('tenant', TENANT)
+                ->setParameterGet('key', API_KEY)
                 ->request('POST');
 
         return $response;
