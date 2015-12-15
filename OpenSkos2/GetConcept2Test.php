@@ -38,7 +38,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:hiddenLabel xml:lang="nl">' . self::$hiddenLabel . '</skos:hiddenLabel>' .
                 '<openskos:set rdf:resource="' . BASE_URI_ . CONCEPT_collection . '"/>' .
                 '<openskos:uuid>' . self::$uuid . '</openskos:uuid>' .
-                '<skos:notation xml:lang="nl">' . self::$notation . '</skos:notation>' .
+                '<skos:notation>' . self::$notation . '</skos:notation>' .
                 '<skos:inScheme  rdf:resource="http://data.beeldengeluid.nl/gtaa/Onderwerpen"/>' .
                 '<skos:topConceptOf rdf:resource="http://data.beeldengeluid.nl/gtaa/Onderwerpen"/>' .
                 '<skos:definition xml:lang="nl">testje (voor def ingevoegd)</skos:definition>' .
@@ -48,6 +48,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
 
         self::$response0 = RequestResponse::CreateConceptRequest(self::$client, $xml, "false");
         print "\n Creation status: " . self::$response0->getStatus();
+        //var_dump(self::$response0->getBody());
     }
 
     public static function tearDownAfterClass() {
@@ -67,6 +68,8 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->assertionsForXMLRDFConcept($response, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
     }
 
+    
+    
     public function testViaPrefLabelImplicit2() {
         print "\n" . "Test: get concept-rdf via its prefLabel, without syaing that this is a pref label";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
@@ -76,6 +79,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
     }
 
+    
     public function testViaAltLabelImplicit2() {
         print "\n" . "Test: get concept-rdf via its altLabel";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
@@ -86,6 +90,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->assertionsForXMLRDFConcept($response, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
     }
 
+    
     public function testViaHiddenLabelImplicit2() {
         print "\n" . "Test: get concept-rdf via its hiddenLabel";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
@@ -97,6 +102,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
     }
 
+    
     public function testViaPrefLabelIncomplete() {
         print "\n" . "Test: get concept-rdf via its prefLabel's prefix ";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
@@ -107,6 +113,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->assertionsForManyConcepts($response);
     }
 
+    
     public function testViaPrefLabelIncompleteAndOneRow() {
         print "\n" . "Test: get concept-rdf via its prefLabel's prefix, but asking for 1 row ";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
@@ -117,16 +124,47 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->assertionsForManyConceptsRows($response, 1);
     }
 
+    
     public function testViaPrefLabelIncompleteAndTwoRows() {
         print "\n" . "Test: get concept-rdf via its prefLabel's prefix, but asking for 2 rows ";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
-        // we can now perform the get-test
+        
+        // create another concept
+        $randomn = rand(0, 2048);
+        $prefLabel = 'testPrefLable_' . $randomn;
+        $altLabel = 'testAltLable_' . $randomn;
+        $hiddenLabel = 'testHiddenLable_' . $randomn;
+        $notation = 'test-xxx-' . $randomn;
+        $uuid = uniqid();
+        $about = BASE_URI_ . CONCEPT_collection . "/" . $notation;
+        $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#">' .
+                '<rdf:Description rdf:about="' . $about . '">' .
+                '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
+                '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
+                '<skos:altLabel xml:lang="nl">' . $altLabel . '</skos:altLabel>' .
+                '<skos:hiddenLabel xml:lang="nl">' . $hiddenLabel . '</skos:hiddenLabel>' .
+                '<openskos:set rdf:resource="' . BASE_URI_ . CONCEPT_collection . '"/>' .
+                '<openskos:uuid>' . $uuid . '</openskos:uuid>' .
+                '<skos:notation>' . $notation . '</skos:notation>' .
+                '<skos:inScheme  rdf:resource="http://data.beeldengeluid.nl/gtaa/Onderwerpen"/>' .
+                '<skos:topConceptOf rdf:resource="http://data.beeldengeluid.nl/gtaa/Onderwerpen"/>' .
+                '<skos:definition xml:lang="nl">testje (voor def ingevoegd)</skos:definition>' .
+                '</rdf:Description>' .
+                '</rdf:RDF>';
+
+
+        $response1 = RequestResponse::CreateConceptRequest(self::$client, $xml, "false");
+        $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating the second test concept: " . $response1->getHeader('X-Error-Msg'));
+        
+       // we can now perform the get-test
         self::$client->setUri(BASE_URI_ . '/public/api/find-concepts?q=prefLabel:testPrefLable*&rows=2');
         $response = self::$client->request(Zend_Http_Client::GET);
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
+        //var_dump($response ->getBody());
         $this->assertionsForManyConceptsRows($response, 2);
     }
 
+    
     public function testViaPrefLabelAndLangExist2() {
         print "\n" . "Test: get concept-rdf via its prefLabel and language. ";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
@@ -137,6 +175,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->assertionsForXMLRDFConcept($response, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
     }
 
+    
     public function testViaPrefLabelAndLangDoesNotExist2() {
         print "\n" . "Test: get concept-rdf via its prefLabel and laguage. Empty result. ";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
@@ -147,6 +186,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->assertionsForManyConceptsZeroResults($response);
     }
 
+    
     public function testViaPrefLabelPrefixAndLangExist2() {
         print "\n" . "Test: get concept-rdf via its prefLabel and language. ";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
@@ -160,6 +200,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->assertionsForManyConcepts($response);
     }
 
+    
     public function testViaHandleXML() {
         print "\n" . "Test: get concept-rdf via its id. ";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
@@ -170,6 +211,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->assertionsForXMLRDFConcept($response, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
     }
 
+    
     public function testViaIdXML() {
         print "\n" . "Test: get concept-rdf via its id. ";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
@@ -180,6 +222,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->assertionsForXMLRDFConcept($response, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
     }
 
+    
     public function testViaIdXMLrdf() {
         print "\n" . "Test: get concept-rdf via its id. ";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
@@ -190,6 +233,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->assertionsForXMLRDFConcept($response, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
     }
 
+    
     public function testViaIdHtml() {
         print "\n" . "Test: get concept-html via its id. ";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
@@ -199,6 +243,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsForHtmlConcept($response, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
     }
+    
     
     public function testViaHandleHtml() {
         print "\n" . "Test: get concept-html via its id. ";
@@ -210,6 +255,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->assertionsForHtmlConcept($response, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
     }
     
+    
     public function testViaHandleJsonFiltered() {
         print "\n" . "Test: get concept-json with filtered fields via it handle ";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
@@ -220,6 +266,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->assertionsForJsonConceptFiltered($response, self::$uuid, self::$prefLabel);
     }
 
+    
     public function testViaIdJson() {
         print "\n" . "Test: get concept-json via its id. ";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
@@ -230,6 +277,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->assertionsForJsonConcept($response, self::$uuid, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
     }
 
+    
     public function testViaIdJsonP() {
         print "\n" . "Test: get concept-json via its id. ";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
@@ -239,7 +287,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsForJsonPConcept($response, self::$uuid, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
     }
-
+  
     private function assertionsForManyConceptsRows($response, $rows) {
 
         $dom = new Zend_Dom_Query();
@@ -250,8 +298,8 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
 
         $sanityCheck = $dom->queryXpath('/rdf:RDF');
         $this->AssertEquals(1, count($sanityCheck));
-        $results2 = $dom->queryXpath('/rdf:RDF/rdf:Description');
-        $this->AssertEquals($rows, count($results2));
+        $results2 = $dom->query('rdf:Description');
+        $this->AssertEquals($rows, count($results2), count($results2) . "rdf:Description is/are found");
     }
 
     private function assertionsForManyConceptsZeroResults($response) {
@@ -371,18 +419,20 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
     private function assertionsForJsonConcept($response, $uuid, $prefLabel, $altLabel, $hiddenLabel, $lang, $definition, $notation, $topConceptOf, $inScheme) {
         $json = $response->getBody();
         $array = json_decode($json, true);
-        $this->assertEquals($uuid, $array["uuid"]);
+        $this->assertEquals($uuid, $array["uuid"][0]);
         $this->assertEquals($altLabel, $array["altLabel@nl"][0]);
-        $this->assertEquals($prefLabel, $array["prefLabel@nl"]);
+        $this->assertEquals($prefLabel, $array["prefLabel@nl"][0]);
         return $json;
     }
     
     private function assertionsForJsonConceptFiltered($response, $uuid, $prefLabel) {
         $json = $response->getBody();
         $array = json_decode($json, true);
+        //var_dump($json);
+        //var_dump($array);
         $this -> assertEquals(3, count($array));
-        $this->assertEquals($uuid, $array["uuid"]);
-        $this->assertEquals($prefLabel, $array["prefLabel@nl"]);
+        $this->assertEquals($uuid, $array["uuid"][0]);
+        $this->assertEquals($prefLabel, $array["prefLabel@nl"][0]);
         return $json;
     }
 

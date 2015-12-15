@@ -50,16 +50,18 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<ns0:terms-dateAccepted>' . $dateAccepted . '</ns0:terms-dateAccepted>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="' . $set .'"/>' .
-                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
+        // var_dump($xml);
+        
         $response = RequestResponse::CreateConceptRequest($this -> client, $xml, "true");
         if ($response -> getStatus() == 201) {
             array_push($this -> abouts, $this ->getAbout($response));
         } 
         $this -> resultMessaging($response);
-        $this->AssertEquals(409, $response->getStatus());
+        $this->AssertEquals(201, $response->getStatus());
     }
 
     
@@ -69,6 +71,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $randomn = rand(0, 2048);
         $prefLabel = 'testPrefLable_' . $randomn;
         $set = BASE_URI_ . CONCEPT_collection;
+        $uuid = uniqid();
 
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#">' .
                 '<rdf:Description>' .
@@ -76,8 +79,8 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
                 '<openskos:set rdf:resource="' . $set . '"/>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
-                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
-                '<openskos:uuid>892276e6-2db0-4351-8e0b-1094cf6106cd</openskos:uuid>' .
+                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<openskos:uuid>'.$uuid . '</openskos:uuid>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -103,7 +106,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:notation>' . $notation . '</skos:notation>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="' . $set . '"/>' .
-                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -141,7 +144,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="' . $set . '"/>' .
-                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -169,7 +172,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:notation>' . $notation . '</skos:notation>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="' . $set . '"/>' .
-                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -180,7 +183,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
     }
 
     
-    public function test05BCreateConceptWithURIUniquePrefLabel() {
+    public function test05BCreateConceptWithURIUniquePrefLabelNoNotation() {
         // Create concept with URI and with unique prefLabel, without skos:notation
         print "\n\n test05B ... \n";
         $randomn = rand(0, 4096);
@@ -194,10 +197,11 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="'. $set . '"/>' .
-                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
+        //var_dump($xml);
         $response = RequestResponse::CreateConceptRequest($this -> client, $xml, "false");
         if ($response->getStatus() == 201) {
             array_push($this->abouts, $about);
@@ -222,7 +226,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:notation>' . $notation . '</skos:notation>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="' . $set . '"/>' .
-                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -255,7 +259,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="' . $set . '"/>' .
-                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -282,7 +286,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="'. $set . '"/>' .
-                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -306,7 +310,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="'. $set . '"/>' .
-                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -317,6 +321,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $this -> resultMessaging($response);
         $this->AssertEquals(400, $response->getStatus());
     }
+    
     
     public function test09CreateConceptWithoutUriPrefLabelExists() {
         // Create a concept without Uri and prefLabel is not unique within a scheme. 
@@ -333,7 +338,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:altLabel xml:lang="nl">' . $altLabel . '</skos:altLabel>' .
                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="'. $set . '"/>' .
-                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -371,13 +376,14 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                  '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="'. $set . '"/>' . 
                 '<skos:notation>' . $notation .  '</skos:notation>' .
-                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
-        $response = RequestResponse::CreateConceptRequest($this -> client, $xml, "true");
+        $response = RequestResponse::CreateConceptRequest($this -> client, $xml, "false");
         if ($response->getStatus() == 201) {
             array_push($this->abouts, $this->getAbout($response));
+            var_dump($response -> getBody());
         }
         $this -> resultMessaging($response);
         $this->AssertEquals(400, $response->getStatus());
@@ -396,7 +402,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
                  '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
                 '<openskos:set rdf:resource="'. $set . '"/>'  .
-                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -407,7 +413,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $this -> resultMessaging($response);
         $this->AssertEquals(400, $response->getStatus());
     }
-
+    
     // this method also retrieves rdf:about element which is used in tearDown method to remove created concept after the method is done.
     private function CheckCreatedConcept($response) {
         $dom = new Zend_Dom_Query();
