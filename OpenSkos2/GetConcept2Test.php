@@ -287,7 +287,8 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsForJsonPConcept($response, self::$uuid, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
     }
-  
+    
+    
     private function assertionsForManyConceptsRows($response, $rows) {
 
         $dom = new Zend_Dom_Query();
@@ -299,7 +300,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $sanityCheck = $dom->queryXpath('/rdf:RDF');
         $this->AssertEquals(1, count($sanityCheck));
         $results2 = $dom->query('rdf:Description');
-        $this->AssertEquals($rows, count($results2), count($results2) . "rdf:Description is/are found");
+        $this->AssertEquals($rows, count($results2), count($results2) . " rdf:Description is/are found");
     }
 
     private function assertionsForManyConceptsZeroResults($response) {
@@ -419,9 +420,9 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
     private function assertionsForJsonConcept($response, $uuid, $prefLabel, $altLabel, $hiddenLabel, $lang, $definition, $notation, $topConceptOf, $inScheme) {
         $json = $response->getBody();
         $array = json_decode($json, true);
-        $this->assertEquals($uuid, $array["uuid"][0]);
+        $this->assertEquals($uuid, $array["uuid"]);
         $this->assertEquals($altLabel, $array["altLabel@nl"][0]);
-        $this->assertEquals($prefLabel, $array["prefLabel@nl"][0]);
+        $this->assertEquals($prefLabel, $array["prefLabel@nl"]);
         return $json;
     }
     
@@ -431,8 +432,8 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         //var_dump($json);
         //var_dump($array);
         $this -> assertEquals(3, count($array));
-        $this->assertEquals($uuid, $array["uuid"][0]);
-        $this->assertEquals($prefLabel, $array["prefLabel@nl"][0]);
+        $this->assertEquals($uuid, $array["uuid"]);
+        $this->assertEquals($prefLabel, $array["prefLabel@nl"]);
         return $json;
     }
 
