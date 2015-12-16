@@ -39,7 +39,7 @@
        <const name="COLLECTION_1_conceptsbaseurl" value =""/>
        <const name="COLLECTION_1_type_resource" value ="http://www.w3.org/2002/07/owl#Ontology"/>
        <const name="COLLECTION_1_creator" value ="meertens"/>
-       <const name="COLLECTION_1_creator_about_suffix" value ="/api/institution/mi"/>
+       <const name="COLLECTION_1_creator_about_suffix" value ="/api/institutions/mi"/>
        <const name="CALLBACK_NAME" value ="my_Callback1234"/>
        <const name="NUMBER_SCHEMATA" value="2"/>
        <const name="SCHEMA_1" value="http://data.beeldengeluid.nl/gtaa/test1/testschema1"/>

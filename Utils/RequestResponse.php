@@ -104,6 +104,7 @@ class RequestResponse {
     }
     
     public static function GetCollectionOrInstitution($client, $requestString, $contentType) {
+        print "\n $requestString \n";
         $client->setUri($requestString);
         $client->setConfig(array(
             'maxredirects' => 0,

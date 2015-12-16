@@ -23,7 +23,7 @@ class GetCollections2Test extends PHPUnit_Framework_TestCase {
     }
     
     public function testAllCollections() {
-        print "\n Test: get all collections in default format ... ";
+        print "\n Test: get all collections in default format (rdf) ... ";
         $response = RequestResponse::GetCollectionOrInstitution(self::$client, BASE_URI_ . '/public/api/collections', 'text/xml');
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsXMLRDFCollections($response);
@@ -33,16 +33,19 @@ class GetCollections2Test extends PHPUnit_Framework_TestCase {
         print "\n Test: get all collections in json ... ";
         $response = RequestResponse::GetCollectionOrInstitution(self::$client, BASE_URI_ . '/public/api/collections?format=json', 'application/json');
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
-        $this->assertionsJsonCollections($response);
+        $json = json_decode($response -> getBody(), true);
+        $this->assertionsJsonCollections($json);
     }
     
    
     
     public function testAllCollectionsJsonP() {
         print "\n Test: get all collections in jsonp ... ";
-        $response = RequestResponse::GetCollectionOrInstitution(self::$client, BASE_URI_ . '/public/api/collections?format=jsonp$callback='.CALLBACK_NAME, 'application/json');
+        $response = RequestResponse::GetCollectionOrInstitution(self::$client, BASE_URI_ . '/public/api/collections?format=jsonp&callback='.CALLBACK_NAME, 'application/json');
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
-        $this->assertionsJsonPCollections($response);
+        $jsonP = $response->getBody();
+        $json=RequestResponse::jsonP_decode_parameters($jsonP, CALLBACK_NAME);
+        $this->assertionsJsonCollections($json);
     }
 
     public function testAllCollectionsOAIYesJson() {
@@ -101,7 +104,7 @@ class GetCollections2Test extends PHPUnit_Framework_TestCase {
     }
 
     public function testCollectionHTML() {
-        print "\n Test: get a collection in jsonp ... ";
+        print "\n Test: get a collection in html ... ";
         $response = RequestResponse::GetCollectionOrInstitution(self::$client, BASE_URI_ . '/public/api/collections/' . COLLECTION_1_tenant . ":" . COLLECTION_1_code. '.html', 'text/html');
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $dom = new Zend_Dom_Query();
@@ -126,9 +129,7 @@ class GetCollections2Test extends PHPUnit_Framework_TestCase {
         }
     }
     
-    private function assertionsJsonCollections($response) {
-        $json = $response->getBody();
-        $collections = json_decode($json, true);
+    private function assertionsJsonCollections($collections) {
         $this -> assertEquals(NUMBER_COLLECTIONS, count($collections["collections"]));
         $i =0;
         foreach ($collections["collections"] as $collection){
@@ -137,11 +138,6 @@ class GetCollections2Test extends PHPUnit_Framework_TestCase {
         }
     }
     
-    
-    
-    private function assertionsJsonPCollections($response) {
-        $this -> assertionsJsonCollections($response);
-    }
     
     private function assertionsXMLRDFCollection(Zend_Dom_Query $dom, $i) {
         $results1 = $dom->query('rdf:Description');
