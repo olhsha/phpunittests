@@ -56,7 +56,7 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
                     '<openskos:uuid>' . $uuid . '</openskos:uuid>' .
                     '<openskos:status>approved</openskos:status>' .
                     '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
-                    '<skos:notation xml:lang="nl">' . $notation . '</skos:notation>' .
+                    '<skos:notation>' . $notation . '</skos:notation>' .
                     '<skos:inScheme  rdf:resource="http://data.beeldengeluid.nl/gtaa/Onderwerpen"/>' .
                     '<skos:topConceptOf rdf:resource="http://data.beeldengeluid.nl/gtaa/Onderwerpen"/>' .
                     '<skos:definition xml:lang="nl">testje (voor def ingevoegd)</skos:definition>' .
@@ -82,6 +82,7 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
         RequestResponse::deleteConcepts(self::$abouts, self::$client);
     }
     
+    
     public function testAutocompleteInLoopNoParams() {
         print "\n testAutocomplete in loop ";
          if (self::$success) {
@@ -106,16 +107,18 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
     }
     
     
-    public function testAutocompleteSearchPrefLabel() {
-        print "\n testAutocomplete search alt Label";
+    public function testAutocompleteSearchAltLabel() {
+        print "\n testAutocomplete search alt Label \n";
         if (self::$success) {
             $word = self::$labelMap[ALT_LABEL] . self::$prefs[1]; // prefLabel<someuuid>a.
-            $response = RequestResponse::AutocomleteRequest(self::$client, $word, "?searchLabel=prefLabel");
+            //print "\n $word \n";
+            $response = RequestResponse::AutocomleteRequest(self::$client, $word, "?searchLabel=altLabel");
             if ($response->getStatus() != 200) {
                 Logging::failureMessaging($response, 'autocomplete on word '. $word);
             }
             $this->AssertEquals(200, $response->getStatus());
             $json = $response->getBody();
+            //var_dump($json);
             $arrayjson = json_decode($json, true);
             $this->AssertEquals(26, count($arrayjson));
         } else {
@@ -139,6 +142,7 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
             print "\n Cannot perform the test because something is wrong with creating test concepts, see above. \n ";
         }
     }
+    
     
      public function testAutocompleteReturnAltLabel() {
         print "\n testAutocomplete return alt Label";
@@ -196,7 +200,7 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
             print "\n Cannot perform the test because something is wrong with creating test concepts, see above. \n ";
         }
     }
-    
+   
     
     public function testAutocompleteFormatHTML() {
         print "\n testAutocomplete search pref Label";
@@ -212,5 +216,6 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
             print "\n Cannot perform the test because something is wrong with creating test concepts, see above. \n ";
         }
     }
+    
   
 }
