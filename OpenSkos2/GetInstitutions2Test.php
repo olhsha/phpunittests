@@ -33,16 +33,20 @@ class GetInstitutions2Test extends PHPUnit_Framework_TestCase {
         print "\n Test: get all institutions in json ... ";
         $response = RequestResponse::GetCollectionOrInstitution(self::$client, BASE_URI_ . '/public/api/institutions?format=json', 'application/json');
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
-        $this->assertionsJsonInstitutions($response);
+        $json = $response->getBody();
+        $institutions = json_decode($json, true);
+        $this->assertionsJsonInstitutions($institutions);
     }
     
    
     
     public function testAllInstitutionsJsonP() {
         print "\n Test: get all institutions in jsonp ... ";
-        $response = RequestResponse::GetCollectionOrInstitution(self::$client, BASE_URI_ . '/public/api/institutions?format=jsonp$callback'. CALLBACK_NAME , 'application/json');
+        $response = RequestResponse::GetCollectionOrInstitution(self::$client, BASE_URI_ . '/public/api/institutions?format=jsonp&callback='. CALLBACK_NAME , 'application/json');
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
-        $this->assertionsJsonPInstitutions($response);
+        $jsonP = $response->getBody();
+        $institutions = RequestResponse::jsonP_decode_parameters($jsonP, CALLBACK_NAME);
+        $this->assertionsJsonInstitutions($institutions);
     }
 
     
@@ -111,21 +115,13 @@ class GetInstitutions2Test extends PHPUnit_Framework_TestCase {
         }
     }
     
-    private function assertionsJsonInstitutions($response) {
-        $json = $response->getBody();
-        $institutions = json_decode($json, true);
+    private function assertionsJsonInstitutions($institutions) {
         $this -> assertEquals(NUMBER_COLLECTIONS, count($institutions["institutions"]));
         $i =0;
         foreach ($institutions["institutions"] as $institution){
            $this -> assertionsJsonInstitution($institution, $i);
            $i++;
         }
-    }
-    
-    
-    
-    private function assertionsJsonPInstitutions($response) {
-        $this -> assertionsJsonInstitutions($response);
     }
     
     private function assertionsXMLRDFInstitution(Zend_Dom_Query $dom, $i) {
