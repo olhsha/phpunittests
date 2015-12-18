@@ -34,7 +34,7 @@ class ExportConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:hiddenLabel xml:lang="nl">' . self::$hiddenLabel . '</skos:hiddenLabel>' .
                 '<openskos:set rdf:resource="' . BASE_URI_ . CONCEPT_collection . '"/>' .
                 '<openskos:uuid>' . self::$uuid . '</openskos:uuid>' .
-                '<skos:notation xml:lang="nl">' . self::$notation . '</skos:notation>' .
+                '<skos:notation>' . self::$notation . '</skos:notation>' .
                 '<skos:inScheme  rdf:resource="http://data.beeldengeluid.nl/gtaa/Onderwerpen"/>' .
                 '<skos:topConceptOf rdf:resource="http://data.beeldengeluid.nl/gtaa/Onderwerpen"/>' .
                 '<skos:definition xml:lang="nl">testje (voor def ingevoegd)</skos:definition>' .
@@ -57,11 +57,18 @@ class ExportConcept2Test extends PHPUnit_Framework_TestCase {
 
     public function testExport() {
         if (self::$response0->getStatus() == 201) {
-            $response = RequestResponse::ExportRequest(self::$client, self::$uuid, dirname(__DIR__) . '/OpenSkos2/ExportTest.xml');
+            self::$client->resetParameters();
+            //self::$client->setUri(BASE_URI_ . '/public/api/find-concepts?q=prefLabel:' . self::$prefLabel);
+            //$response = self::$client->request(Zend_Http_Client::GET);
+            //!!! it used to be self::$uuid!!!
+            $response = RequestResponse::ExportRequest(self::$client, self::$about, dirname(__DIR__) . '/OpenSkos2/ExportTest.xml');
             if ($response->getStatus() != 200) {
                 Logging::failureMessaging($response, "export concept");
             }
             $this->AssertEquals(200, $response->getStatus());
+            
+            var_dump($response -> GetBody());
+        
             $this -> assertions($response);
         } else {
             Logging::failureMessaging(self::$response0, "create test concept");
@@ -69,6 +76,7 @@ class ExportConcept2Test extends PHPUnit_Framework_TestCase {
     }
     
     private function assertions($response){
+        
         $dom = new Zend_Dom_Query();
         $dom->setDocumentXML($response -> GetBody());
         
@@ -82,7 +90,7 @@ class ExportConcept2Test extends PHPUnit_Framework_TestCase {
         // Assert - 2 
         $results2 = $dom->query('skos:inScheme');
         $this -> AssertEquals(1, count($results2));
-        $this->assertStringStartsWith("http://data.beeldengeluid.nl/gtaa/Onderwerpen", $results2 -> getAttribute('rdf:resource'));
+        $this->assertStringStartsWith("http://data.beeldengeluid.nl/gtaa/Onderwerpen", $results2 -> current()-> getAttribute('rdf:resource'));
         
     }
 

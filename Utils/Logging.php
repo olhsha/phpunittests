@@ -12,8 +12,8 @@ class Logging {
     
     public static function failureMessaging($response, $action) {
         $result = "\n Failed to " . $action . ", response header: " . $response->getHeader('X-Error-Msg') .
-                "\n Failed to " . $action . ", response message: " . $response->getMessage() .
-                "\n Failed to " . $action . ", responce body: " . $response->getBody();
+                "\n Failed to " . $action . ", response message: " . $response->getMessage();// .
+                //"\n Failed to " . $action . ", responce body: " . $response->getBody();
         print $result;
         return $result;
     }

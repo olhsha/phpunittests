@@ -356,7 +356,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
             $this -> resultMessaging($response);
             $this->AssertEquals(400, $response->getStatus());
         } else {
-            print "ERROR while creating the first test concept, cannot proceed woth the test! ";
+            print "ERROR while creating the first test concept, cannot proceed with the test! ";
             Logging::failureMessaging($response0, 'create the first test concept');
         }
     }

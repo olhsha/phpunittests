@@ -43,6 +43,7 @@ class RequestResponse {
     }
     
     public static function CreateRelationMultipartFormRequest($client, $body, $boundary) {
+        $client -> resetParameters();
         $client->setUri(BASE_URI_ . "/public/api/relation");
         $client->setConfig(array(
             'maxredirects' => 2,
@@ -61,8 +62,9 @@ class RequestResponse {
         return $response;
     }
     
-    public static function CreateRelationUrlEncodedRequest($client, $body) {
-        $client->setUri(BASE_URI_ . "/public/api/relation");
+    public static function CreateRelationUrlEncodedRequest($client, $parameterString) {
+        $client -> resetParameters();
+        $client->setUri(BASE_URI_ . "/public/api/relation?".$parameterString);
         $client->setConfig(array(
             'maxredirects' => 2,
             'timeout' => 30));
@@ -73,14 +75,13 @@ class RequestResponse {
             'Accept-Encoding' => 'gzip, deflate',
             'Connection' => 'keep-alive')
         );
-        $response = $client
-                ->setRawData($body)
-                ->request('POST');
+        $response = $client ->request('POST');
 
         return $response;
     }
     
     public static function CreateRelationViaParametersRequest($client, $aboutX, $relation, $aboutY) {
+        $client -> resetParameters();
         $client->setUri(BASE_URI_ . "/public/api/relation");
         $client->setConfig(array(
             'maxredirects' => 2,
@@ -186,11 +187,11 @@ class RequestResponse {
         $client -> SetParameterPost('maxDepth', 1);
         $client -> SetParameterPost('exportableFields', "");
         $client -> SetParameterPost('filedsToExport', "");
-        $client -> SetParameterPost('type', 'concept');
+        $client -> SetParameterPost('type', "concept");
         $client -> SetParameterPost('additionalData', $conceptId);
         $client -> SetParameterPost('currentUrl', $currentURLpostParameter);
         $client -> SetParameterPost('exportButton', 'Export');
-        $response = $client->request('POST');
+        $response = $client->request(Zend_Http_Client::POST);
         return $response;
     }
     

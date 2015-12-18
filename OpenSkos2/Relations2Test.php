@@ -37,7 +37,7 @@ public static function setUpBeforeClass() {
                 '<skos:prefLabel xml:lang="nl">' . self::$prefLabelX . '</skos:prefLabel>' .
                 '<openskos:set rdf:resource="' . BASE_URI_ . CONCEPT_collection . '"/>' .
                 '<openskos:uuid>' . self::$uuidX . '</openskos:uuid>' .
-                '<skos:notation xml:lang="nl">' . self::$notationX . '</skos:notation>' .
+                '<skos:notation>' . self::$notationX . '</skos:notation>' .
                 '<skos:inScheme  rdf:resource="http://data.beeldengeluid.nl/gtaa/Onderwerpen"/>' .
                 '<skos:topConceptOf rdf:resource="http://data.beeldengeluid.nl/gtaa/Onderwerpen"/>' .
                 '<skos:definition xml:lang="nl">testje (voor def ingevoegd)</skos:definition>' .
@@ -59,7 +59,7 @@ public static function setUpBeforeClass() {
                 '<skos:prefLabel xml:lang="nl">' . self::$prefLabelY . '</skos:prefLabel>' .
                 '<openskos:set rdf:resource="' . BASE_URI_ . CONCEPT_collection . '"/>' .
                 '<openskos:uuid>' . self::$uuidY . '</openskos:uuid>' .
-                '<skos:notation xml:lang="nl">' . self::$notationY . '</skos:notation>' .
+                '<skos:notation>' . self::$notationY . '</skos:notation>' .
                 '<skos:inScheme  rdf:resource="http://data.beeldengeluid.nl/gtaa/Onderwerpen"/>' .
                 '<skos:topConceptOf rdf:resource="http://data.beeldengeluid.nl/gtaa/Onderwerpen"/>' .
                 '<skos:definition xml:lang="nl">testje (voor def ingevoegd)</skos:definition>' .
@@ -112,13 +112,13 @@ apikey
     }
     
     public function testCreateRelationURLEncoded() {
-        print "\n" . "Test: create relation X has narrower Y via url-encoded body  ";
+        print "\n" . "Test: create relation X has narrower Y via url-encoded parameter string  ";
         $this->AssertEquals(201, self::$responseX->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept X: " . self::$responseX->getHeader('X-Error-Msg'));
         $this->AssertEquals(201, self::$responseY->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept Y: " . self::$responseY->getHeader('X-Error-Msg'));
-        $body = 'content'. urlencode("=" . self::$aboutX). "&type". urlencode("=http://www.w3.org/2004/02/skos/core#narrower").
+        $parameterString = 'content'. urlencode("=" . self::$aboutX). "&type". urlencode("=http://www.w3.org/2004/02/skos/core#narrower").
          'related'. urlencode("=" . self::$aboutY). "&tenant". urlencode("=". COLLECTION_1_tenant).
                 '&key'. urlencode("=". API_KEY);
-        $response = RequestResponse::CreateRelationURLEncodedRequest(self::$client, $body);
+        $response = RequestResponse::CreateRelationURLEncodedRequest(self::$client, $parameterString);
         $this->AssertEquals(200, $response->getStatus(), $response->getHeader('X-Error-Msg'));
         // todo: add assertions
     }

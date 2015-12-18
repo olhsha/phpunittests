@@ -20,15 +20,15 @@ class ImportConcept2Test extends \PHPUnit_Framework_TestCase {
         self::$client = Authenticator::authenticate();
         // create a test concept
         $randomn = rand(0, 2048);
-        self::$prefLabel = 'testPrefLable_' . $randomn;
-        self::$notation = 'test-' . $randomn;
+        self::$prefLabel = 'testImportPrefLable_' . $randomn;
+        self::$notation = 'test-import-' . $randomn;
+        print "\n ". self::$notation . "\n";
         self::$uuid = uniqid();
         self::$about = BASE_URI_ . CONCEPT_collection . "/" . self::$notation;
         self::$creator = CREATOR;
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:ns0="http://dublincore.org/documents/dcmi-terms/#">' .
                 '<rdf:Description rdf:about="' . self::$about . '">' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
-                '<dcterms:creator>' . self::$creator . '</dcterms:creator>' .
                 '<skos:notation>' . self::$notation . '</skos:notation>' .
                 '<skos:inScheme rdf:resource="http://hdl.handle.net/11148/CCR_P-DialogueActs_1bb8b49f-7260-6731-6479-408c29cead73"/>' .
                 '<skos:inScheme rdf:resource="http://hdl.handle.net/11148/CCR_P-LexicalSemantics_0d519a3c-85a6-ea17-d93c-8b89339ffc88"/>' .
@@ -50,7 +50,6 @@ class ImportConcept2Test extends \PHPUnit_Framework_TestCase {
                 '<openskos:uuid> ' . self::$uuid . '</openskos:uuid>' .
                 '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' . '<skos:scopeNote xml:lang="en">A text corpus may be limited according to aspects of subject fields, size or time, e.g. mathematical texts, certain periodicals from 1986 onwards. It is used as source material for further linguistic analysis or terminology work. (source: ISO 1087-2, 2.7)</skos:scopeNote>' .
                 '<skos:definition xml:lang="en">A systematic collection of machine-readable texts or parts of text prepared, coded and stored according to predefined rules. (source: ISO 1087-2, 2.7)</skos:definition>' .
-                '<dcterms:modified>2015-01-20T13:09:14Z</dcterms:modified>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -112,10 +111,6 @@ Submit';
     }
     public function testImport() {
         print "\n" . "Testing import ... ";
-        // retrieve the current amount of triples for the "object"
-        $results0 = $this -> sparqlRetrieveTriplesForCreator(self::$creator);
-        print("\n The current amount of triples for the given creator is " . count($results0));
-       
         $response = RequestResponse::ImportConceptRequest(self::$client, self::$postData, self::$boundaryNumeric);
         Logging::var_error_log("\n Response body ", $response->getBody(), __DIR__."/ImportResponse.html");
         $this->AssertEquals(200, $response->getStatus(), 'Failed to import concept');
@@ -125,20 +120,31 @@ Submit';
         $retvar = 0;
         $sendjob = exec(PHP_JOBS_PROCESS, $output, $retvar);
 
-        // check 1
-        // retrieve imported concept: the amount of the concepts created by CREATOR must increase by 1
-        $results1= $this ->sparqlRetrieveTriplesForCreator(self::$creator);
-        print("\n The new  amount of triples for the given creator is " . count($results1) . "\n");
-        // Asserting
-        $this -> AssertEquals(count($results0)+1, count($results1));
+        self::$client->setUri(BASE_URI_ . '/public/api/find-concepts?q=prefLabel:' . self::$prefLabel);
+        $responseGet = self::$client->request(Zend_Http_Client::GET);
+        $this->AssertEquals(200, $responseGet->getStatus(), $responseGet->getMessage());
         
-        // check 2
-        $results2= $this ->sparqlRetrieveTriplesForNotation(self::$notation);
-        $this -> AssertEquals(1, count($results2));
+        // check via spraql query
+        $sparqlResult = $this ->sparqlRetrieveTriplesForNotation(self::$notation);
+        var_dump($sparqlResult);
+        // checking part via get
+        $dom = new Zend_Dom_Query();
+        $namespaces = RequestResponse::setNamespaces();
+        $dom->registerXpathNamespaces($namespaces);
+        $xml = $responseGet->getBody();
+        $dom->setDocumentXML($xml);
+        var_dump($xml);
+                
+        $results1 = $dom->query('rdf:RDF');
+        $this->AssertEquals(1, $results1->current()->getAttribute('openskos:numFound'));
+        
+        $results2 = $dom->queryXpath('/rdf:RDF/rdf:Description');
+        $this->AssertEquals(1, count($results2));
+        
     }
     
     
-    
+    /* better not to use sparql check because we want to chech the status of the database+solr which should be synchronised immediately after import happens 
     private function sparqlRetrieveTriplesForCreator($creator){
         $query = 'select ?s ?p  ?o where {?s <http://purl.org/dc/terms/creator> "' . $creator . '"@en . }';
         //print $query . "\n";
@@ -146,7 +152,7 @@ Submit';
         $result = $sparqlClient -> query($query);
         return $result;
     }
-    
+    */
    private function sparqlRetrieveTriplesForNotation($notation){
        // alternative query (the fuseki's query is the same except that # must be encoded as %23 or it will be understood as eof
        //$query = "prefix skos: <http://www.w3.org/2004/02/skos/core#> select ?s ?p  ?o where {?s  skos:notation '" . $notation .  "' . }";
