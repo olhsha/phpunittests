@@ -46,10 +46,11 @@ class ImportConcept2Test extends \PHPUnit_Framework_TestCase {
                 '<skos:topConceptOf rdf:resource="http://hdl.handle.net/11148/CCR_P-LexicalSemantics_0d519a3c-85a6-ea17-d93c-8b89339ffc88"/>' .
                 '<skos:topConceptOf rdf:resource="http://hdl.handle.net/11148/CCR_P-DialogueActs_1bb8b49f-7260-6731-6479-408c29cead73"/>' .
                 '<skos:topConceptOf rdf:resource="http://hdl.handle.net/11148/CCR_P-Translation_d8214c27-7c8f-9d05-e6ca-ea8fdc922a1c"/>' .
-                '<skos:prefLabel xml:lang="en">' . self::$prefLabel . '</skos:prefLabel>' .
+                '<skos:prefLabel xml:lang="nl">' . self::$prefLabel . '</skos:prefLabel>' .
                 '<openskos:uuid> ' . self::$uuid . '</openskos:uuid>' .
-                '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' . '<skos:scopeNote xml:lang="en">A text corpus may be limited according to aspects of subject fields, size or time, e.g. mathematical texts, certain periodicals from 1986 onwards. It is used as source material for further linguistic analysis or terminology work. (source: ISO 1087-2, 2.7)</skos:scopeNote>' .
-                '<skos:definition xml:lang="en">A systematic collection of machine-readable texts or parts of text prepared, coded and stored according to predefined rules. (source: ISO 1087-2, 2.7)</skos:definition>' .
+                //'<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' . 
+                '<skos:scopeNote xml:lang="nl">A text corpus may be limited according to aspects of subject fields, size or time, e.g. mathematical texts, certain periodicals from 1986 onwards. It is used as source material for further linguistic analysis or terminology work. (source: ISO 1087-2, 2.7)</skos:scopeNote>' .
+                '<skos:definition xml:lang="nl">A systematic collection of machine-readable texts or parts of text prepared, coded and stored according to predefined rules. (source: ISO 1087-2, 2.7)</skos:definition>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 

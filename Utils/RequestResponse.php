@@ -129,7 +129,7 @@ class RequestResponse {
     }
     
     public static function ImportConceptRequest($client, $postData, $boundary) {
-        $client ->resetParameters();
+        //$client ->resetParameters();
         $client ->setUri(BASE_URI_ . '/public/editor/collections/import/collection/collection');
         $client->setConfig(array(
             'maxredirects' => 10,
