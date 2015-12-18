@@ -9,6 +9,7 @@
 class RequestResponse {
     
     public static function CreateConceptRequest($client, $xml, $autoGenerateIdentifiers) {
+        $client ->resetParameters();
         $client->setUri(BASE_URI_ . "/public/api/concept?");
         
         $response = $client
@@ -26,6 +27,7 @@ class RequestResponse {
     
     
     public static function CreateConceptNoApikeyRequest($client, $xml, $autoGenerateIdentifiers) {
+        $client ->resetParameters();
         $client->setUri(BASE_URI_ . "/public/api/concept?");
         $client->setConfig(array(
             'maxredirects' => 0,
@@ -106,6 +108,8 @@ class RequestResponse {
     
     public static function GetCollectionOrInstitution($client, $requestString, $contentType) {
         print "\n $requestString \n";
+        $client ->resetParameters();
+        
         $client->setUri($requestString);
         $client->setConfig(array(
             'maxredirects' => 0,
@@ -125,7 +129,7 @@ class RequestResponse {
     }
     
     public static function ImportConceptRequest($client, $postData, $boundary) {
-        
+        $client ->resetParameters();
         $client ->setUri(BASE_URI_ . '/public/editor/collections/import/collection/collection');
         $client->setConfig(array(
             'maxredirects' => 10,
@@ -145,6 +149,7 @@ class RequestResponse {
     }
     
     public static function AutocomleteRequest($client, $word, $parameterString) {
+        $client ->resetParameters();
         $uri = BASE_URI_ . '/public/api/autocomplete/' . $word .  $parameterString;
         $client ->setUri($uri);
         $response = $client -> request(Zend_Http_Client::GET);
@@ -152,6 +157,7 @@ class RequestResponse {
     }
     
     public static function DeleteRequest($client, $id){
+        $client ->resetParameters();
         $client ->setUri(BASE_URI_ . '/public/api/concept');
         $client->setConfig(array(
             'maxredirects' => 0,
@@ -166,7 +172,7 @@ class RequestResponse {
     }
     
     public static function ExportRequest($client, $conceptId, $fullFileName){
-
+       $client ->resetParameters();
        $url = BASE_URI_ . '/public/editor/concept/export';
        $host = str_replace("http://", "", BASE_URI_);
        $currentURLpostParameter = urlencode(BASE_URI_ . '/public/editor#search/user' . USER_NUMBER . '/concept/' . $conceptId . '/');
