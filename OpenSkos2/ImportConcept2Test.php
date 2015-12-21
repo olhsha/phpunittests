@@ -47,8 +47,8 @@ class ImportConcept2Test extends \PHPUnit_Framework_TestCase {
                 '<skos:topConceptOf rdf:resource="http://hdl.handle.net/11148/CCR_P-DialogueActs_1bb8b49f-7260-6731-6479-408c29cead73"/>' .
                 '<skos:topConceptOf rdf:resource="http://hdl.handle.net/11148/CCR_P-Translation_d8214c27-7c8f-9d05-e6ca-ea8fdc922a1c"/>' .
                 '<skos:prefLabel xml:lang="nl">' . self::$prefLabel . '</skos:prefLabel>' .
-                '<openskos:uuid> ' . self::$uuid . '</openskos:uuid>' .
-                //'<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' . 
+                '<openskos:uuid>'. self::$uuid . '</openskos:uuid>' .
+                //'<openskos:tenant>beg</openskos:tenant>' . 
                 '<skos:scopeNote xml:lang="nl">A text corpus may be limited according to aspects of subject fields, size or time, e.g. mathematical texts, certain periodicals from 1986 onwards. It is used as source material for further linguistic analysis or terminology work. (source: ISO 1087-2, 2.7)</skos:scopeNote>' .
                 '<skos:definition xml:lang="nl">A systematic collection of machine-readable texts or parts of text prepared, coded and stored according to predefined rules. (source: ISO 1087-2, 2.7)</skos:definition>' .
                 '</rdf:Description>' .
@@ -121,14 +121,14 @@ Submit';
         $retvar = 0;
         $sendjob = exec(PHP_JOBS_PROCESS, $output, $retvar);
 
+        
+        // check via spraql query
+        //$sparqlResult = $this ->sparqlRetrieveTriplesForNotation(self::$notation);
+        //var_dump($sparqlResult);
+        
         self::$client->setUri(BASE_URI_ . '/public/api/find-concepts?q=prefLabel:' . self::$prefLabel);
         $responseGet = self::$client->request(Zend_Http_Client::GET);
         $this->AssertEquals(200, $responseGet->getStatus(), $responseGet->getMessage());
-        
-        // check via spraql query
-        $sparqlResult = $this ->sparqlRetrieveTriplesForNotation(self::$notation);
-        var_dump($sparqlResult);
-        // checking part via get
         $dom = new Zend_Dom_Query();
         $namespaces = RequestResponse::setNamespaces();
         $dom->registerXpathNamespaces($namespaces);
