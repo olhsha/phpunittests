@@ -32,6 +32,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         unset($this->abouts);
     }
 
+    
     public function test01CreateConceptWithoutURIWithDateAccepted2() {
         //CreateConceptTest::test01CreateConceptWithoutURIWithDateAccepted();
         // Create new concept with dateAccepted filled (implicit status APPROVED). This should not be possible. 
@@ -40,21 +41,19 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $prefLabel = 'testPrefLable_' . $randomn;
         $dateSubmitted = date(DateTime::ISO8601); //'2015-10-01T15:06:58Z';//
         $dateAccepted = '2015-10-02T10:31:35Z'; // date(DateTime::ISO8601);'2015-10-01T15:06:58Z';
-        $set = BASE_URI_ . CONCEPT_collection;
 
-        $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:ns0="http://dublincore.org/documents/dcmi-terms/#">' .
+        $xml = '<rdf:RDF xmlns:dcterms="http://purl.org/dc/terms/" xmlns:ns0="http://dublincore.org/documents/dcmi-terms/#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#">' .
                 '<rdf:Description>' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
-                '<ns0:terms-dateSubmitted>' . $dateSubmitted . '</ns0:terms-dateSubmitted>' .
-                '<ns0:terms-dateAccepted>' . $dateAccepted . '</ns0:terms-dateAccepted>' .
-                '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
-                '<openskos:set rdf:resource="' . $set .'"/>' .
-                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<dcterms:dateSubmitted>' . $dateSubmitted . '</dcterms:dateSubmitted>' .
+                '<dcterms:dateAccepted>' . $dateAccepted . '</dcterms:dateAccepted>' .
+                '<skos:inScheme  rdf:resource="'. SCHEMA_URI_1 .'"/>' .
+                '<openskos:set>' . OPENSKOS_SET_code .'</openskos:set>' .
+                '<openskos:tenant>' . TENANT . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
-        // var_dump($xml);
         
         $response = RequestResponse::CreateConceptRequest($this -> client, $xml, "true");
         if ($response -> getStatus() == 201) {
@@ -70,16 +69,15 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         print "\n\n test02 ... \n";
         $randomn = rand(0, 2048);
         $prefLabel = 'testPrefLable_' . $randomn;
-        $set = BASE_URI_ . CONCEPT_collection;
         $uuid = uniqid();
 
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#">' .
                 '<rdf:Description>' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
-                '<openskos:set rdf:resource="' . $set . '"/>' .
-                '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
-                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<openskos:set>' . OPENSKOS_SET_code .'</openskos:set>' .
+                '<skos:inScheme  rdf:resource="'. SCHEMA_URI_1 .'"/>' .
+                '<openskos:tenant>' . TENANT . '</openskos:tenant>' .
                 '<openskos:uuid>'.$uuid . '</openskos:uuid>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
@@ -89,7 +87,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $this->AssertEquals(201, $response->getStatus());
         $this->CheckCreatedConcept($response);
     }
-
+   
    
    public function test03CreateConceptWithURIAlreadyExists() {
         // test if creating a new concept with an URI that already exists, fails
@@ -97,16 +95,15 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $randomn = rand(0, 2048);
         $prefLabel = 'testPrefLable_' . $randomn;
         $notation = 'notation_' . $randomn;
-        $set = BASE_URI_ . CONCEPT_collection;
-        $conceptId = $set . "/" . $notation;
+        $conceptURI = BASE_URI_ . OPENSKOS_SET_code . "/" . $notation;
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:openskos="http://openskos.org/xmlns/openskos.xsd" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:dcterms="http://purl.org/dc/terms/" > ' .
-                '<rdf:Description rdf:about="' . $conceptId . '">' .
+                '<rdf:Description rdf:about="' . $conceptURI . '">' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
                 '<skos:notation>' . $notation . '</skos:notation>' .
-                '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
-                '<openskos:set rdf:resource="' . $set . '"/>' .
-                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<skos:inScheme  rdf:resource="'. SCHEMA_URI_1 .'"/>' .
+                '<openskos:set>' . OPENSKOS_SET_code . '</openskos:set>' .
+                '<openskos:tenant>' . TENANT . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -129,22 +126,20 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
 
        
     }
-
+    
     
     public function test04CreateConceptWithoutURIUniquePrefLabelNoApiKey() {
         // create concept without URI. but with unique prefLabel. Api Key is missng.
-        // todo: veoeken met verkeerde parameters moeten foutcode opleveren (collection, tenant)
         print "\n\n test04 ... \n";
         $randomn = rand(0, 2048);
         $prefLabel = 'testPrefLable_' . $randomn;
-        $set = BASE_URI_ . CONCEPT_collection;
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#">' .
                 '<rdf:Description>' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
-                '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
-                '<openskos:set rdf:resource="' . $set . '"/>' .
-                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<skos:inScheme  rdf:resource="'. SCHEMA_URI_1 .'"/>' .
+                '<openskos:set>' . OPENSKOS_SET_code . '</openskos:set>' .
+                '<openskos:tenant>' . TENANT . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -155,7 +150,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $this -> resultMessaging($response);
         $this->AssertEquals(412, $response->getStatus());
     }
-
+ 
     
     public function test05CreateConceptWithURIUniquePrefLabel() {
         // Create concept with URI and with unique prefLabel, including skos:notation
@@ -163,16 +158,17 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $randomn = rand(0, 4096);
         $prefLabel = 'testPrefLable_' . $randomn;
         $notation = 'testNotation_' . $randomn;
-        $set = BASE_URI_ . CONCEPT_collection;
-        $about = $set . '/' . $notation;
+        $about = BASE_URI_ . OPENSKOS_SET_code . '/' . $notation;
+        $uuid = uniqid();
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#" > ' .
                 '<rdf:Description rdf:about="' . $about . '">' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
                 '<skos:notation>' . $notation . '</skos:notation>' .
-                '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
-                '<openskos:set rdf:resource="' . $set . '"/>' .
-                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<skos:inScheme  rdf:resource="'. SCHEMA_URI_1 .'"/>' .
+                '<openskos:set>' . OPENSKOS_SET_code . '</openskos:set>' .
+                '<openskos:tenant>' . TENANT . '</openskos:tenant>' .
+                '<openskos:uuid>'.$uuid . '</openskos:uuid>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -189,15 +185,16 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $randomn = rand(0, 4096);
         $prefLabel = 'testPrefLable_' . $randomn;
         $notation = 'testNotation_' . $randomn;
-        $set = BASE_URI_ . CONCEPT_collection;
-        $about = $set . '/' . $notation;
+        $about = BASE_URI_ . OPENSKOS_SET_code . '/' . $notation;
+        $uuid = uniqid();
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#" > ' .
                 '<rdf:Description rdf:about="' . $about . '">' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
-                '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
-                '<openskos:set rdf:resource="'. $set . '"/>' .
-                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<skos:inScheme  rdf:resource="'. SCHEMA_URI_1 .'"/>' .
+                '<openskos:set>' . OPENSKOS_SET_code . '</openskos:set>' .
+                '<openskos:tenant>' . TENANT . '</openskos:tenant>' .
+                '<openskos:uuid>'. $uuid . '</openskos:uuid>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -209,7 +206,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $this -> resultMessaging($response);
         $this->AssertEquals(400, $response->getStatus());
     }
-
+  
    
    public function test05CCreateConceptWithURIUniquePrefLabel() {
         // Create concept with URI and with unique prefLabel, with duplicate skos:notation
@@ -217,16 +214,19 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $randomn = rand(0, 4096);
         $prefLabel = 'testPrefLable_' . $randomn;
         $notation = 'testNotation_' . $randomn;
-        $set = BASE_URI_ . CONCEPT_collection;
-        $about = $set . '/' . $notation;
+        $about = BASE_URI_ . OPENSKOS_SET_code . '/' . $notation;
+        $anotherAbout = $about . '-a';
+        $uuid = uniqid();
+        $anotherUUID = uniqid();
         $xml0 = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#" > ' .
                 '<rdf:Description rdf:about="' . $about . '">' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
                 '<skos:notation>' . $notation . '</skos:notation>' .
-                '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
-                '<openskos:set rdf:resource="' . $set . '"/>' .
-                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<skos:inScheme  rdf:resource="'. SCHEMA_URI_1 .'"/>' .
+                '<openskos:set>' . OPENSKOS_SET_code . '</openskos:set>' .
+                '<openskos:tenant>' . TENANT . '</openskos:tenant>' .
+                '<openskos:uuid>'. $uuid . '</openskos:uuid>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -235,6 +235,8 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
             print "\n First concept is created \n";
             array_push($this->abouts, $about);
             $xml1 = str_replace('testPrefLable_', '_another_testPrefLable_', $xml0);
+            $xml1 = str_replace($about, $anotherAbout, $xml1);
+            $xml1 = str_replace('<openskos:uuid>'. $uuid . '</openskos:uuid>', '<openskos:uuid>'. $anotherUUID . '</openskos:uuid>', $xml1);
             $response1 = RequestResponse::CreateConceptRequest($this -> client, $xml1, "false");
             if ($response1->getStatus() == 201) {
                 array_push($this->abouts, $about);
@@ -252,15 +254,13 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         print "\n\n test06 ... \n";
         $randomn = rand(0, 4096);
         $prefLabel = 'testPrefLable_' . $randomn;
-        $set = BASE_URI_ . CONCEPT_collection;
         $wrongXml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#" > ' .
                 '<rdf:Description>' .
-                //'<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>'. 
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
-                '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
-                '<openskos:set rdf:resource="' . $set . '"/>' .
-                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
-                '</rdf:Description>' .
+                '<skos:inScheme  rdf:resource="'. SCHEMA_URI_1 .'"/>' .
+                '<openskos:set>' . OPENSKOS_SET_code . '</openskos:set>' .
+                '<openskos:tenant>' . TENANT . '</openskos:tenant>' .
+                '</rdf:Description' .
                 '</rdf:RDF>';
 
         $response = RequestResponse::CreateConceptRequest($this -> client, $wrongXml, "true");
@@ -268,7 +268,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
             array_push($this->abouts, $this->getAbout($response));
         }
         $this -> resultMessaging($response);
-        $this->AssertEquals(400, $response->getStatus());
+        $this->AssertEquals(412, $response->getStatus());
     }
 
     
@@ -277,16 +277,13 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         print "\n\n test07 ... \n";
         $randomn = rand(0, 4092);
         $prefLabel = 'testPrefLable_' . $randomn;
-        $set = BASE_URI_ . CONCEPT_collection;
-        
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#" > ' .
                 '<rdf:Description>' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
-                '<dcterms:creator>Test</dcterms:creator>' .
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
-                '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
-                '<openskos:set rdf:resource="'. $set . '"/>' .
-                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<skos:inScheme  rdf:resource="'. SCHEMA_URI_1 .'"/>' .
+                '<openskos:set>' . OPENSKOS_SET_code . '</openskos:set>' .
+                '<openskos:tenant>' . TENANT . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -302,15 +299,13 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         print "\n\n test08 ... \n";
         $randomn = rand(0, 4092);
         $prefLabel = 'testPrefLable_' . $randomn;
-        $set = BASE_URI_ . CONCEPT_collection;
-        
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#" > ' .
                 '<rdf:Description>' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
-                '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
-                '<openskos:set rdf:resource="'. $set . '"/>' .
-                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<skos:inScheme  rdf:resource="'. SCHEMA_URI_1 .'"/>' .
+                '<openskos:set>' . OPENSKOS_SET_code . '</openskos:set>' .
+                '<openskos:tenant>' . TENANT . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -329,16 +324,15 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $randomn = rand(0, 4092);
         $prefLabel = 'testPrefLable_' . $randomn;
         $altLabel = 'testAltPrefLable_' . $randomn;
-        $set = BASE_URI_ . CONCEPT_collection;
         // create the first instance of the concept
         $xml0 = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#" > ' .
                 '<rdf:Description>' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
                 '<skos:altLabel xml:lang="nl">' . $altLabel . '</skos:altLabel>' .
-                '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
-                '<openskos:set rdf:resource="'. $set . '"/>' .
-                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<skos:inScheme  rdf:resource="'. SCHEMA_URI_1 .'"/>' .
+                '<openskos:set>' . OPENSKOS_SET_code . '</openskos:set>' .
+                '<openskos:tenant>' . TENANT . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -367,21 +361,20 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         print "\n\n test10 ... \n";
         $randomn = rand(0, 4092);
         $prefLabel = 'testPrefLable_' . $randomn;
-        $set = BASE_URI_ . CONCEPT_collection;
         $notation = 'testNotation_' . $randomn;
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#" > ' .
                 '<rdf:Description>' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
                  '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
-                '<openskos:set rdf:resource="'. $set . '"/>' . 
-                '<skos:notation>' . $notation .  '</skos:notation>' .
-                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<skos:inScheme  rdf:resource="'. SCHEMA_URI_1 .'"/>' .
+                '<openskos:set>' . OPENSKOS_SET_code . '</openskos:set>' .
+                '<openskos:tenant>' . TENANT . '</openskos:tenant>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
         $response = RequestResponse::CreateConceptRequest($this -> client, $xml, "false");
-        if ($response->getStatus() == 201) {
+        if ($response->getStatus() === 201) {
             array_push($this->abouts, $this->getAbout($response));
             var_dump($response -> getBody());
         }
@@ -394,15 +387,16 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         // Create a concept without Uri (no rdf:about), and no notation. prefLabel is unique. 
         print "\n\n test10 ... \n";
         $randomn = rand(0, 4092);
-        $set = BASE_URI_ . CONCEPT_collection;
+        $uuid = uniqid();
         $prefLabel = 'testPrefLable_' . $randomn;
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#" > ' .
                 '<rdf:Description>' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
-                 '<skos:inScheme  rdf:resource="http://meertens/scheme/example1"/>' .
-                '<openskos:set rdf:resource="'. $set . '"/>'  .
-                '<openskos:tenant>' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                '<skos:inScheme  rdf:resource="'. SCHEMA_URI_1 .'"/>' .
+                '<openskos:set>' . OPENSKOS_SET_code . '</openskos:set>' .
+                '<openskos:tenant>' . TENANT . '</openskos:tenant>' .
+                '<openskos:uuid>'. $uuid . '</openskos:uuid>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -432,9 +426,9 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $this->assertNotEquals("", $resURI, "No valid uri for SKOS concept (empty-string value)");
         array_push($this -> abouts, $resURI);
         
-        $status = $dom->queryXpath('/rdf:RDF/skos:Concept/openskos:status');
+        $status = $dom->queryXpath('/rdf:RDF/rdf:Description/openskos:status');
         $this->assertEquals(1, $status->count(), "No openkos:status element. ");
-        $this->assertEquals("Candidate", $status->current()->nodeValue, "Satus is not Candidate, as it must be by just created concept.");
+        $this->assertEquals("candidate", $status->current()->nodeValue, "Satus is not Candidate, as it must be by just created concept.");
         print "\n New concept is created with URI $resURI  and status" . $status->current()->nodeValue;
     }
      
@@ -460,6 +454,6 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
            Logging::failureMessaging($response, 'create concept');
         }
     }
-
+  
 }
 

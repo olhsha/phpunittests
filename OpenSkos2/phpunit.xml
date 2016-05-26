@@ -3,16 +3,13 @@
     <php>
         <const name="BASE_URI_" value = "http://192.168.99.100"/>
         <const name="FILE_PATH" value =""/> 
-        <const name="TENANT" value="mi"/>
-        <const name="USERNAME" value="info@meertens.knaw.nl"/>
-        <const name="USER_NUMBER" value="5"/>
-        <const name="PASSWORD" value="meertenspassword"/>
-        <const name="API_KEY" value="apikey"/>
+        <const name="TENANT" value="meertens"/>
+        <const name="USERNAME" value="menzo.windhouwer@meertens.knaw.nl"/>
+        <const name="API_KEY" value="ky4dbtgsPhH89Vg0"/>
         <const name="PHP_JOBS_PROCESS" value ="php /app/tools/jobs.php process"/>
       
-       <!--  Test Concept -->
-       <const name="CONCEPT_collection" value="/api/collections/mi:collection"/>
-       <const name="CONCEPT_type_resource" value="http://www.w3.org/2004/02/skos/core#Concept"/>
+     
+       <const name="CONCEPT_type" value="http://www.w3.org/2004/02/skos/core#Concept"/>
        
        <!--  Autocomplete -->
        <const name="RETURN_LABEL" value="returnLabel"/>
@@ -24,34 +21,33 @@
        <const name="HID_LABEL" value="hiddenLabel"/>
        <const name="NOTATION" value="notation"/>
        
-       <!-- test collection(s) -->
-       <const name="NUMBER_COLLECTIONS" value ="1"/>
-       <const name="COLLECTION_1_code" value ="collection"/>
-       <const name="COLLECTION_1_tenant" value ="mi"/>
-       <const name="COLLECTION_1_title" value ="collection1"/>
-       <const name="COLLECTION_1_description" value =""/>
-       <const name="COLLECTION_1_website" value =""/>
-       <const name="COLLECTION_1_licensename" value =""/>
-       <const name="COLLECTION_1_licenseurl" value =""/>
-       <const name="COLLECTION_1_oaibaseurl" value =""/>
-       <const name="COLLECTION_1_allowoai" value ="N"/>
-       <const name="COLLECTION_1_conceptsbaseurl" value =""/>
-       <const name="COLLECTION_1_conceptsbaseurl" value =""/>
-       <const name="COLLECTION_1_type_resource" value ="http://www.w3.org/2002/07/owl#Ontology"/>
-       <const name="COLLECTION_1_creator" value ="meertens"/>
-       <const name="COLLECTION_1_creator_about_suffix" value ="/api/institutions/mi"/>
-       <const name="CALLBACK_NAME" value ="my_Callback1234"/>
-       <const name="NUMBER_SCHEMATA" value="2"/>
-       <const name="SCHEMA_1" value="http://data.beeldengeluid.nl/gtaa/test1/testschema1"/>
-       <const name="SCHEMA_2" value="http://data.beeldengeluid.nl/gtaa/test2/testschema2"/>
-       <const name="CREATOR" value="tester"/>
+       <!-- test set (take the data from table collection in MySQL for backward compatibility, or triple store for the completely new version) -->
+       <const name="OPENSKOS_SET_code" value ="isocat"/>
+       <const name="SET_tenant" value ="meertens"/>
+       <const name="SET_title" value ="CLARIN collection"/>
+       <const name="SET_description" value =""/>
+       <const name="SET_website" value =""/>
+       <const name="SET_licensename" value =""/>
+       <const name="SET_licenseurl" value =""/>
+       <const name="SET_oaibaseurl" value =""/>
+       <const name="SET_allowoai" value ="N"/>
+       <const name="SET_conceptsbaseurl" value =""/>
+       <const name="SET_creator" value ="meertens"/> <!-- not in MySQL -->
+       <const name="SET_uri" value ="???"/>  <!-- not in mysql, changeable when restarting docker and re-migraing the data -->
        
-              <!-- test institution(s) -->
-       <const name="NUMBER_INSTITUTIONS" value="1"/>
-       <const name="INSTITUTION_CODE" value="mi"/>
-       <const name="INSTITUTION_NAME" value="meertens"/>
-       <const name="INSTITUTION_URI" value="/api/institutions"/>
-       <const name="INSTITUTION_MAIL" value="info@meertens.knaw.nl"/>
+       
+       <const name="CALLBACK_NAME" value ="my_Callback1234"/>
+       
+       <!-- schemata -->
+       <const name="SCHEMA_URI_1" value="http://hdl.handle.net/11148/CCR_P-SignLanguage_3ff6f5a8-0587-75b4-3bd5-380d6cbb1b02"/> 
+       <const name="SCHEMA_URI_2" value="http://hdl.handle.net/11148/CCR_P-undecided_f1ba0f05-cf64-720d-c95c-68c54d7aaaab"/> 
+       
+       
+              <!-- test institution -->
+       <const name="INSTITUTION_CODE" value="meertens"/>
+       <const name="INSTITUTION_NAME" value="CLARIN"/>
+       <const name="INSTITUTION_URI" value="/???"/> <!-- not in mysql, changeable when restarting docker and re-migraing the data -->
+       <const name="INSTITUTION_MAIL" value="clarin@clarin.eu"/>
     </php>
 </phpunit>
 

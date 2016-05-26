@@ -16,7 +16,6 @@ class RequestResponse {
                 ->setEncType('text/xml')
                 ->setRawData($xml)
                 ->setParameterGet('tenant', TENANT)
-                ->setParameterGet('collection', COLLECTION_1_code)
                 ->setParameterGet('key', API_KEY)
                 ->setParameterGet('autoGenerateIdentifiers', $autoGenerateIdentifiers)
                 ->request('POST');
@@ -37,7 +36,6 @@ class RequestResponse {
                 ->setEncType('text/xml')
                 ->setRawData($xml)
                 ->setParameterGet('tenant', TENANT)
-                ->setParameterGet('collection', COLLECTION_1_code)
                 ->setParameterGet('autoGenerateIdentifiers', $autoGenerateIdentifiers)
                 ->request('POST');
 
@@ -164,7 +162,6 @@ class RequestResponse {
             'timeout' => 30));
         $response = $client
                 ->setParameterGet('tenant', TENANT)
-                ->setParameterGet('collection', COLLECTION_1_code)
                 ->setParameterGet('key', API_KEY)
                 ->setParameterGet('id', $id)
                 ->request('DELETE');
@@ -216,7 +213,7 @@ class RequestResponse {
         foreach ($abouts as $about) {
             if ($about != null) {
                 $response = RequestResponse::DeleteRequest($client, $about);
-                if ($response->getStatus() != 200) {
+                if ($response->getStatus() !== 202 && $response->getStatus() !== 200) {
                     Logging::failureMessaging($response, 'deleting test concept ' . $about);
                 }
             }
