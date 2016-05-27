@@ -29,18 +29,19 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         self::$hiddenLabel = 'testHiddenLable_' . $randomn;
         self::$notation = 'test-xxx-' . $randomn;
         self::$uuid = uniqid();
-        self::$about = BASE_URI_ . CONCEPT_collection . "/" . self::$notation;
+        self::$about = BASE_URI_ . "/".OPENSKOS_SET_code . "/" .  self::$notation;
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#">' .
                 '<rdf:Description rdf:about="' . self::$about . '">' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
                 '<skos:prefLabel xml:lang="nl">' . self::$prefLabel . '</skos:prefLabel>' .
                 '<skos:altLabel xml:lang="nl">' . self::$altLabel . '</skos:altLabel>' .
                 '<skos:hiddenLabel xml:lang="nl">' . self::$hiddenLabel . '</skos:hiddenLabel>' .
-                '<openskos:set rdf:resource="' . BASE_URI_ . CONCEPT_collection . '"/>' .
+                 '<openskos:set>' . OPENSKOS_SET_code .'</openskos:set>' .
+                '<openskos:tenant>' . TENANT . '</openskos:tenant>' .
                 '<openskos:uuid>' . self::$uuid . '</openskos:uuid>' .
                 '<skos:notation>' . self::$notation . '</skos:notation>' .
-                '<skos:inScheme  rdf:resource="http://data.beeldengeluid.nl/gtaa/Onderwerpen"/>' .
-                '<skos:topConceptOf rdf:resource="http://data.beeldengeluid.nl/gtaa/Onderwerpen"/>' .
+                '<skos:topConceptOf rdf:resource="'. SCHEMA_URI_1 .'"/>' .
+                '<skos:inScheme  rdf:resource="'. SCHEMA_URI_1 .'"/>' .
                 '<skos:definition xml:lang="nl">testje (voor def ingevoegd)</skos:definition>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
@@ -53,15 +54,17 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
 
     public static function tearDownAfterClass() {
         if (self::$about != null) {
-            RequestResponse::DeleteRequest(self::$client, self::$about);
+            //RequestResponse::DeleteRequest(self::$client, self::$about);
         } else {
             print "\n Nothing to clean up after testing: the rdf-about is null \n";
         }
     }
 
+    /*
     public function testViaPrefLabel2() {
         print "\n" . "Test: get concept-rdf via its prefLabel. ";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
+        self::$client ->resetParameters();
         self::$client->setUri(BASE_URI_ . '/public/api/find-concepts?q=prefLabel:' . self::$prefLabel);
         $response = self::$client->request(Zend_Http_Client::GET);
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
@@ -74,16 +77,18 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         print "\n" . "Test: get concept-rdf via its prefLabel, without syaing that this is a pref label";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
         // we can now perform the get-test
+        self::$client ->resetParameters();
         self::$client->setUri(BASE_URI_ . '/public/api/find-concepts?q=' . self::$prefLabel);
         $response = self::$client->request(Zend_Http_Client::GET);
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
     }
-
+*/
     
     public function testViaAltLabelImplicit2() {
         print "\n" . "Test: get concept-rdf via its altLabel";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
         // we can now perform the get-test
+        self::$client ->resetParameters();
         self::$client->setUri(BASE_URI_ . '/public/api/find-concepts?q=' . self::$altLabel);
         $response = self::$client->request(Zend_Http_Client::GET);
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
@@ -95,6 +100,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         print "\n" . "Test: get concept-rdf via its hiddenLabel";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
         // we can now perform the get-test
+        self::$client ->resetParameters();
         self::$client->setUri(BASE_URI_ . '/public/api/find-concepts?q=' . self::$hiddenLabel);
         $response = self::$client->request(Zend_Http_Client::GET);
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
@@ -107,6 +113,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         print "\n" . "Test: get concept-rdf via its prefLabel's prefix ";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
         // we can now perform the get-test
+        self::$client ->resetParameters();
         self::$client->setUri(BASE_URI_ . '/public/api/find-concepts?q=prefLabel:testPrefLable*');
         $response = self::$client->request(Zend_Http_Client::GET);
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
@@ -118,13 +125,14 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         print "\n" . "Test: get concept-rdf via its prefLabel's prefix, but asking for 1 row ";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
         // we can now perform the get-test
+        self::$client ->resetParameters();
         self::$client->setUri(BASE_URI_ . '/public/api/find-concepts?q=prefLabel:testPrefLable*&rows=1');
         $response = self::$client->request(Zend_Http_Client::GET);
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsForManyConceptsRows($response, 1);
     }
 
-    
+    /*
     public function testViaPrefLabelIncompleteAndTwoRows() {
         print "\n" . "Test: get concept-rdf via its prefLabel's prefix, but asking for 2 rows ";
         $this->AssertEquals(201, self::$response0->getStatus(), "\n Cannot perform the test because something is wrong with creating a test concept: " . self::$response0->getHeader('X-Error-Msg'));
@@ -287,7 +295,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->AssertEquals(200, $response->getStatus(), $response->getMessage());
         $this->assertionsForJsonPConcept($response, self::$uuid, self::$prefLabel, self::$altLabel, self::$hiddenLabel, "nl", "testje (voor def ingevoegd)", self::$notation, 1, 1);
     }
-    
+    */
     
     private function assertionsForManyConceptsRows($response, $rows) {
 
@@ -345,10 +353,10 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
 
         $results1 = $dom->queryXpath('/rdf:RDF/rdf:Description');
         $this->AssertEquals(1, count($results1));
-        $this->AssertStringStartsWith(BASE_URI_ . CONCEPT_collection, $results1->current()->getAttribute('rdf:about'));
+        $this->AssertStringStartsWith(BASE_URI_ . "/".OPENSKOS_SET_code , $results1->current()->getAttribute('rdf:about'));
 
         $results2 = $dom->query('rdf:type');
-        $this->AssertEquals(CONCEPT_type_resource, $results2->current()->getAttribute('rdf:resource'));
+        $this->AssertEquals(CONCEPT_type, $results2->current()->getAttribute('rdf:resource'));
 
         $results3 = $dom->query('skos:notation');
         $this->AssertEquals($notation, $results3->current()->nodeValue);
@@ -378,7 +386,7 @@ class GetConcept2Test extends PHPUnit_Framework_TestCase {
         $this->AssertStringStartsWith(BASE_URI_, $results9->current()->getAttribute('rdf:resource'));
 
         $results8 = $dom->query('openskos:set');
-        $this->AssertEquals(BASE_URI_ . CONCEPT_collection, $results8->current()->getAttribute('rdf:resource'));
+        $this->AssertEquals(OPENSKOS_SET_code, $results8->current()->nodeValue);
     }
 
     

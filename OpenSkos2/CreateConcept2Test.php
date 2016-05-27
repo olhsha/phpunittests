@@ -95,7 +95,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $randomn = rand(0, 2048);
         $prefLabel = 'testPrefLable_' . $randomn;
         $notation = 'notation_' . $randomn;
-        $conceptURI = BASE_URI_ . OPENSKOS_SET_code . "/" . $notation;
+        $conceptURI =  BASE_URI_ . "/".OPENSKOS_SET_code . "/" . $notation;
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:openskos="http://openskos.org/xmlns/openskos.xsd" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:dcterms="http://purl.org/dc/terms/" > ' .
                 '<rdf:Description rdf:about="' . $conceptURI . '">' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
@@ -158,7 +158,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $randomn = rand(0, 4096);
         $prefLabel = 'testPrefLable_' . $randomn;
         $notation = 'testNotation_' . $randomn;
-        $about = BASE_URI_ . OPENSKOS_SET_code . '/' . $notation;
+        $about = BASE_URI_ . "/" . OPENSKOS_SET_code . '/' . $notation;
         $uuid = uniqid();
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#" > ' .
                 '<rdf:Description rdf:about="' . $about . '">' .
@@ -185,7 +185,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $randomn = rand(0, 4096);
         $prefLabel = 'testPrefLable_' . $randomn;
         $notation = 'testNotation_' . $randomn;
-        $about = BASE_URI_ . OPENSKOS_SET_code . '/' . $notation;
+        $about = BASE_URI_ . "/" .OPENSKOS_SET_code . '/' . $notation;
         $uuid = uniqid();
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#" > ' .
                 '<rdf:Description rdf:about="' . $about . '">' .
@@ -214,7 +214,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $randomn = rand(0, 4096);
         $prefLabel = 'testPrefLable_' . $randomn;
         $notation = 'testNotation_' . $randomn;
-        $about = BASE_URI_ . OPENSKOS_SET_code . '/' . $notation;
+        $about = BASE_URI_ . "/" . OPENSKOS_SET_code . '/' . $notation;
         $anotherAbout = $about . '-a';
         $uuid = uniqid();
         $anotherUUID = uniqid();
