@@ -45,34 +45,41 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
             $hiddenLabel = self::$labelMap[HID_LABEL] . self::$prefs[$i] . $randomn;
             $notation = self::$labelMap[NOTATION]  . self::$prefs[$i] . $randomn;
             $uuid = uniqid();
-            $about = BASE_URI_ . CONCEPT_collection . "/" . $notation;
+            $about = BASE_URI_ . "/".OPENSKOS_SET_code . "/" . $notation;
             $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#">' .
                     '<rdf:Description rdf:about="' . $about . '">' .
-                    '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
                     '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
                     '<skos:altLabel xml:lang="nl">' . $altLabel . '</skos:altLabel>' .
                     '<skos:hiddenLabel xml:lang="nl">' . $hiddenLabel . '</skos:hiddenLabel>' .
-                    '<openskos:set rdf:resource="' . BASE_URI_ . CONCEPT_collection . '"/>' .
                     '<openskos:uuid>' . $uuid . '</openskos:uuid>' .
+                    '<skos:inScheme  rdf:resource="'. SCHEMA_URI_1 .'"/>' .
                     '<openskos:status>approved</openskos:status>' .
-                    '<openskos:tenant> ' . COLLECTION_1_tenant . '</openskos:tenant>' .
+                    '<openskos:set>' . OPENSKOS_SET_code .'</openskos:set>' .
+                    '<openskos:tenant>' . TENANT . '</openskos:tenant>' .
                     '<skos:notation>' . $notation . '</skos:notation>' .
-                    '<skos:inScheme  rdf:resource="http://data.beeldengeluid.nl/gtaa/Onderwerpen"/>' .
-                    '<skos:topConceptOf rdf:resource="http://data.beeldengeluid.nl/gtaa/Onderwerpen"/>' .
+                    '<skos:topConceptOf rdf:resource="'. SCHEMA_URI_1 .'"/>' .
                     '<skos:definition xml:lang="nl">testje (voor def ingevoegd)</skos:definition>' .
                     '</rdf:Description>' .
                     '</rdf:RDF>';
 
             $response0 = RequestResponse::CreateConceptRequest(self::$client, $xml, "false");
-            if ($response0 ->getStatus() !=201) {
-                array_push(self::$abouts,$about);  
+            if ($response0->getStatus() !== 201) {
                 Logging::failureMessaging($response0, "creating test concept");
                 self::$success = false;
                 return;
-            } 
+            } else { // things went well, but when submitting a concept is status is automatically reset to "candidate";
+                // now update to change the status for "approved", otherwise autocomplete would not react
+                $response1 = RequestResponse::UpdateConceptRequest(self::$client, $xml);
+                if ($response1->getStatus() !== 201) {
+                    Logging::failureMessaging($response1, "updating test concept to set status to 'apprved'");
+                    self::$success = false;
+                    return;
+                }
+            }
+
+            array_push(self::$abouts,$about); 
             $i++;
-        }
-          
+        }  
         self::$success = true;
          
     }
@@ -125,6 +132,7 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
             print "\n Cannot perform the test because something is wrong with creating test concepts, see above. \n ";
         }
     }
+    
     
     public function testAutocompleteSearchAltLabelWithNoOccurences() {
         print "\n testAutocomplete search alt Label";
@@ -211,7 +219,7 @@ class Autocomplete2Test extends PHPUnit_Framework_TestCase {
                 Logging::failureMessaging($response , 'autocomplete on word '. $word . "?format=html");
             }
             $this->AssertEquals(200, $response->getStatus());
-            // todo: add some chek when it becomes clear how the ourput looks like
+            // todo: add some chek when it becomes clear how the output looks like
         } else {
             print "\n Cannot perform the test because something is wrong with creating test concepts, see above. \n ";
         }

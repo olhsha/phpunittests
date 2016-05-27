@@ -23,6 +23,19 @@ class RequestResponse {
         return $response;
     }
     
+    public static function UpdateConceptRequest($client, $xml) {
+        $client ->resetParameters();
+        $client->setUri(BASE_URI_ . "/public/api/concept?");
+        
+        $response = $client
+                ->setEncType('text/xml')
+                ->setRawData($xml)
+                ->setParameterGet('tenant', TENANT)
+                ->setParameterGet('key', API_KEY)
+                ->request('PUT');
+
+        return $response;
+    }
     
     
     public static function CreateConceptNoApikeyRequest($client, $xml, $autoGenerateIdentifiers) {
