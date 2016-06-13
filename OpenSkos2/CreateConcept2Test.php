@@ -69,7 +69,6 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         print "\n\n test02 ... \n";
         $randomn = rand(0, 2048);
         $prefLabel = 'testPrefLable_' . $randomn;
-        $uuid = uniqid();
 
         $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmi="http://dublincore.org/documents/dcmi-terms/#">' .
                 '<rdf:Description>' .
@@ -78,7 +77,6 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<openskos:set>' . OPENSKOS_SET_code .'</openskos:set>' .
                 '<skos:inScheme  rdf:resource="'. SCHEMA_URI_1 .'"/>' .
                 '<openskos:tenant>' . TENANT . '</openskos:tenant>' .
-                '<openskos:uuid>'.$uuid . '</openskos:uuid>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
@@ -96,7 +94,8 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
         $prefLabel = 'testPrefLable_' . $randomn;
         $notation = 'notation_' . $randomn;
         $conceptURI =  BASE_URI_ . "/".OPENSKOS_SET_code . "/" . $notation;
-        $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:openskos="http://openskos.org/xmlns/openskos.xsd" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:dcterms="http://purl.org/dc/terms/" > ' .
+        $uuid = uniqid();
+        $xml = '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:openskos="http://openskos.org/xmlns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:dcterms="http://purl.org/dc/terms/" > ' .
                 '<rdf:Description rdf:about="' . $conceptURI . '">' .
                 '<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>' .
                 '<skos:prefLabel xml:lang="nl">' . $prefLabel . '</skos:prefLabel>' .
@@ -104,6 +103,7 @@ class CreateConcept2Test extends PHPUnit_Framework_TestCase {
                 '<skos:inScheme  rdf:resource="'. SCHEMA_URI_1 .'"/>' .
                 '<openskos:set>' . OPENSKOS_SET_code . '</openskos:set>' .
                 '<openskos:tenant>' . TENANT . '</openskos:tenant>' .
+                '<openskos:uuid>' . $uuid . '</openskos:uuid>' .
                 '</rdf:Description>' .
                 '</rdf:RDF>';
 
